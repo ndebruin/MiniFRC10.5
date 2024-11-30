@@ -14,14 +14,15 @@ struct CoProcStructRX {
     float yaw;      // 4 bytes
     int16_t camX;   // 2 bytes
     int16_t camY;   // 2 bytes
-    // total: 24 bytes
+    bool camTargetDetected; // 1 byte
+    // total: 25 bytes
 };
 
 CoProcStructRX COPROCRXDATA;
 
 void coProcSend(const CoProcStructTX* table)
 {
-  Serial.write((const char*)table, sizeof(struct CoProcStructTX));  // 4 bytes.
+  Serial.write((const char*)table, sizeof(struct CoProcStructTX));  // 25 bytes.
 }
 
 bool coProcReceive(CoProcStructRX* table)
