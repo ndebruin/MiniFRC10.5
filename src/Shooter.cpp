@@ -48,10 +48,9 @@ void Shooter::stop(){
     bottomSetPower = 0.0;
 }
 
-void Shooter::run(double kS_Top, double kS_Bottom){
+void Shooter::run(double kS){
     shooterMode = 1;
-    topSetPower = kS_Top;
-    bottomSetPower = kS_Bottom;
+    topSetPower = kS;
 }
 
 void Shooter::ampShot(){

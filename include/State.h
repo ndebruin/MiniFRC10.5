@@ -38,41 +38,25 @@ class State
         }
 
         // 0 - stop
-        // 1 - amp
-        // 2 - subwoofer
-        // 3 - podium
+        // 1 - forward amp
+        // 2 - backward amp
+        // 3 - subwoofer
         // 4 - passing
         // 5 - intake
+        // 6 - dynamic
         uint8_t getNextShot(){
             return nextShot;
         }
 
         // 0 - stop
-        // 1 - amp
-        // 2 - subwoofer
-        // 3 - podium
+        // 1 - forward amp
+        // 2 - backward amp
+        // 3 - subwoofer
         // 4 - passing
         // 5 - intake
+        // 6 - dynamic
         void setNextShot(uint8_t NextShot){
             nextShot = NextShot;
-        }
-
-
-        long getLeftCount(){
-            return leftCount-leftOffset;
-        }
-        long getRightCount(){
-            return rightCount-rightOffset;
-        }
-
-        void setEncoderCounts(long left, long right){
-            leftCount = left;
-            rightCount = right;
-        }
-
-        void zeroEncoders(){
-            leftOffset = leftCount;
-            rightOffset = rightCount;
         }
 
         double getYaw(){
