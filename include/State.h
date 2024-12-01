@@ -75,12 +75,12 @@ class State
             inAuto = true;
         }
 
-        void setTeleop(){
-            inAuto = false;
+        void setRobotMode(){
+            robotMode = false;
         }
-
-        bool robotMode(){
-            return inAuto;
+        // false for teleop, true for auto
+        bool RobotMode(){
+            return robotMode;
         }
 
     private:
@@ -89,7 +89,7 @@ class State
         bool note;
         bool blue;
 
-        bool inAuto = false;
+        bool robotMode = false;
 
         // 0 - stop
         // 1 - amp

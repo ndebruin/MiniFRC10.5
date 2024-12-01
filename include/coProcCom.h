@@ -22,12 +22,12 @@ CoProcStructRX COPROCRXDATA;
 
 void coProcSend(const CoProcStructTX* table)
 {
-  Serial.write((const char*)table, sizeof(struct CoProcStructTX));  // 25 bytes.
+  Serial.write((const char*)table, sizeof(struct CoProcStructTX));  // 1 byte.
 }
 
 bool coProcReceive(CoProcStructRX* table)
 {
-  return (Serial.readBytes((char*)table, sizeof(CoProcStructRX)) == sizeof(CoProcStructRX));
+  return (Serial.readBytes((char*)table, sizeof(CoProcStructRX)) == sizeof(CoProcStructRX)); // 25 bytes.
 }
 
 bool updateFromCoProc(CoProcStructRX* table)
