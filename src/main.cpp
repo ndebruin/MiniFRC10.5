@@ -25,8 +25,7 @@
 BluetoothSerial SerialBluetooth; // bluetooth link
 
 
-PoseEstimator robotPose;
-
+PoseEstimator pose;
 State state;
 
 // create our actual motors and servos
@@ -43,7 +42,7 @@ NoU_Motor shooterMotor(shooterMotorChannel);
 
 // create our subsystem objects
 
-Drivetrain drivetrain = Drivetrain(&frontLeftMotor, &frontRightMotor, &backLeftMotor, &backRightMotor, &robotPose, &state);
+Drivetrain drivetrain = Drivetrain(&frontLeftMotor, &frontRightMotor, &backLeftMotor, &backRightMotor, &pose, &state);
 
 Arm arm = Arm(&armServo, &state);
 
@@ -54,11 +53,13 @@ Intake intake = Intake(&intakeMotor, &state);
 
 // create our object definitions for fancy stuff (path following, autoaim, etc)
 
-// PathFollower pathFollower = PathFollower(&drivetrain, &robotPose, &state);
+// PathFollower pathFollower = PathFollower(&drivetrain, &pose, &state);
 
-// DynamicShooter shooterAim = DynamicShooter(&drivetrain, &arm, &shooter, &robotPose, &state);
+// DynamicShooter shooterAim = DynamicShooter(&drivetrain, &arm, &shooter, &pose, &state);
 
 ////////////////////////////////////////////////////////////////////// Function Declerations //////////////////////////////////////////////////////////////////////
+
+void asyncUpdate();
 
 double deadzone(double raw);
 
@@ -91,7 +92,7 @@ void setup()
   shooter.begin();
   intake.begin();
 
-  robotPose.begin();
+  pose.begin();
   
   // pathFollower.begin();
   // shooterAim.begin();
@@ -101,23 +102,9 @@ void setup()
 
 void loop() 
 {
-  // update data from the coproc
-  if(updateFromCoProc(&rxDataStruct)){
-    robotPose.setRawPos(rxDataStruct.posX, rxDataStruct.posY);
-    robotPose.setRawYaw(rxDataStruct.yaw);
-    // shooterAim.setHaveTarget(rxDataStruct.camTargetDetected);
-    // shooterAim.setRawPos(rxDataStruct.camX, rxDataStruct.camY);
-  }
+  asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  // update from driver station
-  AlfredoConnect.update();
-
-  // if we need to send data to the coProc
-  if(updateCoProc){
-    updateCoProc = false;
-    coProcSend(&txDataStruct);
-  }
-
+  // TELEOP
   if(state.RobotMode() == TELEOP_MODE){ // if in teleop
     // handle drivetrain
     runDrivetrain();
@@ -125,11 +112,7 @@ void loop()
     runStateSelector();
   }
 
-  // let subsystems code update
-  drivetrain.update();
-  intake.update();
-  arm.update();
-  shooter.update();
+  
 
 // example code for autoaim
   // if(autoaim){
@@ -145,6 +128,36 @@ void loop()
 }
 
 ////////////////////////////////////////////////////////////////////// Function Definitions //////////////////////////////////////////////////////////////////////
+
+void asyncUpdate(){
+  // let subsystems code update
+  drivetrain.update();
+  intake.update();
+  arm.update();
+  shooter.update();
+
+  // let controllers update
+  pose.update();
+  // shooterAim.update();
+  // pathFollower.update();
+
+  // update from driver station
+  AlfredoConnect.update();
+
+  // update data from the coproc
+  if(updateFromCoProc(&rxDataStruct)){
+    pose.setRawPos(rxDataStruct.posX, rxDataStruct.posY);
+    pose.setRawYaw(rxDataStruct.yaw);
+    // shooterAim.setHaveTarget(rxDataStruct.camTargetDetected);
+    // shooterAim.setRawPos(rxDataStruct.camX, rxDataStruct.camY);
+  }
+
+  // if we need to send data to the coProc
+  if(updateCoProc){
+    updateCoProc = false;
+    coProcSend(&txDataStruct);
+  }
+}
 
 double deadzone(double rawJoy){
   if(fabs(rawJoy) < deadzoneValue){
