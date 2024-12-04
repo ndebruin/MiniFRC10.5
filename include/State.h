@@ -3,6 +3,19 @@
 
 #include <Arduino.h>
 
+#define TELEOP_MODE false
+#define AUTO_MODE true
+
+#define STOP 0
+#define INTAKE 1
+#define SUBWOOFER 2
+#define AMP_FORWARD 3
+#define AMP_BACKWARD 4
+#define PASS 5
+#define DYNAMIC 6
+#define SOURCE 7
+#define CLIMBERS_UP 8
+#define CLIMBERS_DOWN 9
 
 #include "Constants.h"
 
@@ -37,46 +50,40 @@ class State
             enabled = Enabled;
         }
 
-        // 0 - stop
-        // 1 - forward amp
-        // 2 - backward amp
-        // 3 - subwoofer
-        // 4 - passing
-        // 5 - intake
-        // 6 - dynamic
-        uint8_t getNextShot(){
-            return nextShot;
+        // 0 - Stop/Stow
+        // 1 - Normal Intake
+        // 2 - Subwoofer
+        // 3 - Amp Forward
+        // 4 - Amp Backward
+        // 5 - Pass
+        // 6 - Dynamic Shot
+        // 7 - Source Intake
+        // 8 - Climbers Up
+        // 9 - Climbers Down
+        uint8_t getNextAction(){
+            return nextAction;
         }
 
-        // 0 - stop
-        // 1 - forward amp
-        // 2 - backward amp
-        // 3 - subwoofer
-        // 4 - passing
-        // 5 - intake
-        // 6 - dynamic
-        void setNextShot(uint8_t NextShot){
-            nextShot = NextShot;
+        // 0 - Stop/Stow
+        // 1 - Normal Intake
+        // 2 - Subwoofer
+        // 3 - Amp Forward
+        // 4 - Amp Backward
+        // 5 - Pass
+        // 6 - Dynamic Shot
+        // 7 - Source Intake
+        // 8 - Climbers Up
+        // 9 - Climbers Down
+        void setNextAction(uint8_t NextAction){
+            nextAction = NextAction;
         }
 
-        double getYaw(){
-            return yaw-yawOffset;
+        void setAutoMode(){
+            robotMode = AUTO_MODE;
         }
 
-        void setYaw(double Yaw){
-            yaw = Yaw;
-        }
-
-        void zeroYaw(){
-            yawOffset = yaw;
-        }
-
-        void setAuto(){
-            inAuto = true;
-        }
-
-        void setRobotMode(){
-            robotMode = false;
+        void setTeleopMode(){
+            robotMode = TELEOP_MODE;
         }
         // false for teleop, true for auto
         bool RobotMode(){
@@ -85,29 +92,23 @@ class State
 
     private:
 
-        bool enabled =false;
-        bool note;
+        bool enabled = false;
+        bool note = false;
         bool blue;
 
         bool robotMode = false;
 
-        // 0 - stop
-        // 1 - amp
-        // 2 - subwoofer
-        // 3 - podium
-        // 4 - passing
-        // 5 - intake
-        uint8_t nextShot;
-
-        double yaw;
-        double yawOffset;
-
-        long leftCount;
-        long leftOffset;
-        long rightCount;
-        long rightOffset;
-
-        
+        // 0 - Stop/Stow
+        // 1 - Normal Intake
+        // 2 - Subwoofer
+        // 3 - Amp Forward
+        // 4 - Amp Backward
+        // 5 - Pass
+        // 6 - Dynamic Shot
+        // 7 - Source Intake
+        // 8 - Climbers Up
+        // 9 - Climbers Down
+        uint8_t nextAction;        
 };
 
 #endif

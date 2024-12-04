@@ -13,35 +13,56 @@ class Intake
     public:
         Intake(NoU_Motor* IntakeMotor, State* state);
         uint8_t begin();
-        uint8_t update();
+        int8_t update();
 
-        uint8_t getMode();
+        void execute();
 
-        void runUntilBreak();
-        void runUntilEmpty();
-        void run(double kS);
-        void run();
-        void outtake();
-        void stop();
+        // -1 - Custom Speed
+        // 0 - Stop
+        // 1 - Intake
+        // 2 - Subwoofer
+        // 3 - Amp Forward
+        // 4 - Amp Backward
+        // 5 - Pass
+        // 6 - Dynamic Shot
+        // 7 - Source Intake
+        int8_t getMode(){ return intakeMode; }
 
-        uint16_t getRange();
+        void set(double kS){
+            intakeMode = -1;
+            setPower = kS;
+            execute();
+        }
 
+        void setRawSensor(uint16_t sensor1, uint16_t sensor2);
 
-        bool autoFinished(){return autonFinished;}
+        void stop(){
+            intakeMode = 0;
+            setPower = 0.0;
+            execute();
+        }
+
     private:
         NoU_Motor* intakeMotor;
 
         State* robotState;
 
+        uint16_t rawSensor1;
+        uint16_t rawSensor2;
+
         double setPower;
 
-        // 0 - stop
-        // 1 - open loop
-        // 2 - intake
-        // 3 - shoot
-        uint8_t intakeMode;
+        // -1 - Custom Speed
+        // 0 - Stop
+        // 1 - Intake
+        // 2 - Subwoofer
+        // 3 - Amp Forward
+        // 4 - Amp Backward
+        // 5 - Pass
+        // 6 - Dynamic Shot
+        // 7 - Source Intake
+        int8_t intakeMode;
 
-        bool autonFinished = false;
 
 };
 

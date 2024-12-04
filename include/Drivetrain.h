@@ -26,8 +26,6 @@ class Drivetrain
 
         void stop();
 
-
-
     private:
         NoU_Motor* frontLeftMotor;
         NoU_Motor* frontRightMotor;
@@ -35,7 +33,7 @@ class Drivetrain
         NoU_Motor* backRightMotor;
 
         PoseEstimator* pose;
-        State* state;
+        State* robotState;
 
         bool fieldOriented;
  

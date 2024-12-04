@@ -1,8 +1,9 @@
 #include <Arduino.h>
+#include <Alfredo_NoU2.h>
 #include "Drivetrain.h"
 
-Drivetrain(NoU_Motor* FrontLeftMotor, NoU_Motor* FrontRightMotor, NoU_Motor* BackLeftMotor, NoU_Motor* BackRightMotor, PoseEstimator* poseEstimator)
-                                    : frontLeftMotor(FrontLeftMotor), frontRightMotor(FrontRightMotor), backLeftMotor(BackLeftMotor), backRightMotor(BackRightMotor), pose(poseEstimator)
+Drivetrain::Drivetrain(NoU_Motor* FrontLeftMotor, NoU_Motor* FrontRightMotor, NoU_Motor* BackLeftMotor, NoU_Motor* BackRightMotor, PoseEstimator* poseEstimator, State* RobotState)
+                                    : frontLeftMotor(FrontLeftMotor), frontRightMotor(FrontRightMotor), backLeftMotor(BackLeftMotor), backRightMotor(BackRightMotor), pose(poseEstimator), robotState(RobotState)
 { }
 
 bool Drivetrain::isFieldOriented(){ return fieldOriented; }
@@ -23,32 +24,41 @@ uint8_t Drivetrain::begin()
     
 }
 
+uint8_t Drivetrain::update(){
+    // safety measure
+    if(!robotState->isEnabled()){
+        stop();
+    }
+}
+
 void Drivetrain::drive(float linearX, float linearY, float angularZ)
 {
+
     if(fieldOriented)
     {
         float temp = linearX * cos(pose->getYaw()) + linearY * sin(pose->getYaw());
         linearY = -linearX * sin(pose->getYaw()) + linearY * cos(pose->getYaw());
         linearX = temp;
     }
+
     float frontLeftPower = linearX + linearY + angularZ;
     float frontRightPower = -linearX + linearY - angularZ;
-    float rearLeftPower = -linearX + linearY + angularZ;
-    float rearRightPower = linearX + linearY - angularZ;
-    float maxMagnitude = max(fabs(frontLeftPower), max(fabs(frontRightPower), max(fabs(rearLeftPower), fabs(rearRightPower))));
+    float backLeftPower = -linearX + linearY + angularZ;
+    float backRightPower = linearX + linearY - angularZ;
+    float maxMagnitude = max(fabs(frontLeftPower), max(fabs(frontRightPower), max(fabs(backLeftPower), fabs(backRightPower))));
     if (maxMagnitude > 1) 
     {
         frontLeftPower /= maxMagnitude;
         frontRightPower /= maxMagnitude;
-        rearLeftPower /= maxMagnitude;
-        rearRightPower /= maxMagnitude;
+        backLeftPower /= maxMagnitude;
+        backRightPower /= maxMagnitude;
     }
-    if(state->isEnabled())
+    if(robotState->isEnabled())
     {
-        frontLeftMotor.write(frontLeftPower);
-        frontRightMotor.write(frontRightPower);
-        backLeftMotor.write(backLeftPower);
-        backRightMotor.write(backRightPower);
+        frontLeftMotor->set(frontLeftPower);
+        frontRightMotor->set(frontRightPower);
+        backLeftMotor->set(backLeftPower);
+        backRightMotor->set(backRightPower);
     }
 
     return;
@@ -58,6 +68,15 @@ void Drivetrain::drive(float linearX, float linearY, float angularZ, bool fieldO
 {
     fieldOriented = fieldOrientedEnabled;
     drive(linearX, linearY, angularZ);
+
+    return;
+}
+
+void Drivetrain::stop(){
+    frontLeftMotor->set(0);
+    frontRightMotor->set(0);
+    backLeftMotor->set(0);
+    backRightMotor->set(0);
 
     return;
 }

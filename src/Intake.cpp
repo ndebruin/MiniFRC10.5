@@ -7,70 +7,60 @@ Intake::Intake(NoU_Motor* IntakeMotor, State* state) : intakeMotor(IntakeMotor),
 uint8_t Intake::begin(){
     intakeMotor->setInverted(true);
 
-
     stop();
 
     return 0;
 }
 
-uint8_t Intake::update(){
-    if(robotState->isEnabled()){
-        if(intakeMotor->getOutput() != setPower){
-            intakeMotor->set(setPower);
-        }
+int8_t Intake::update(){
+    // safety measure
+    if(!robotState->isEnabled()){
+        stop();
     }
 
-    if(intakeMode == 2){
-        if(robotState->hasNote()){
+    // update from action controller
+    switch (robotState->getNextAction()){
+        case STOP:
             stop();
-            autonFinished = true;
-            return 1;
-        }
+            break;
+        case INTAKE:
+            intakeMode = 2;
+            setPower = Intake_IN_kS;
+            break;
+        case SUBWOOFER:
+            intakeMode = 2;
+            setPower = Intake_SHOOT_kS;
+            break;
+        case AMP_FORWARD:
+            intakeMode = 3;
+            setPower = Intake_AMP_kS;
+            break;
+        case AMP_BACKWARD:
+            intakeMode = 4;
+            setPower = Intake_SHOOT_kS;
+            break;
+        case PASS:
+            intakeMode = 5;
+            setPower = Intake_SHOOT_kS;
+            break;
+        case DYNAMIC:
+            intakeMode = 6;
+            setPower = Intake_SHOOT_kS;
+            break;
+        case SOURCE:
+            intakeMode = 7;
+            setPower = Intake_REVERSE_IN_kS;
+            break;
+        case -1: // custom speed, do nothing
+            break;
     }
-
-    if(intakeMode == 3){
-        if(!robotState->hasNote()){
-            stop();
-            autonFinished = true;
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-uint8_t Intake::getMode(){
     return intakeMode;
 }
 
-void Intake::stop(){
-    intakeMode = 0;
-    setPower = 0.0;
-}
-
-void Intake::run(){
-    intakeMode = 1;
-    setPower = Intake_IN_kS;
-}
-
-void Intake::outtake(){
-    intakeMode = 1;
-    setPower = -Intake_IN_kS;
-}
-
-void Intake::run(double kS){
-    intakeMode = 1;
-    setPower = kS;
-}
-
-void Intake::runUntilBreak(){
-    autonFinished = false;
-    intakeMode = 2;
-    setPower = Intake_IN_kS;
-}
-
-void Intake::runUntilEmpty(){
-    autonFinished = false;
-    intakeMode = 3;
-    setPower = Intake_SHOOT_kS;
+void Intake::execute(){
+    if(robotState->isEnabled()){
+        if(setPower != intakeMotor->getOutput()){
+            intakeMotor->set(setPower);
+        }
+    }
 }

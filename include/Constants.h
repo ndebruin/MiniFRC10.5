@@ -51,15 +51,18 @@
 #define intakeMotorChannel 6
 
 #define Intake_IN_kS 0.0
+#define Intake_REVERSE_IN_kS -0.0
+
 #define Intake_SHOOT_kS 0.0
+#define Intake_AMP_kS -0.0
 
-#define Intake_OUT_kS -0.0
-
-#define pinSensor 4
 #define pinFeedbackLED 5
 
-#define sensorValueEmpty 100
-#define sensorValueNote 1000
+#define sensor1ValueEmpty 100
+#define sensor1ValueNote 1000
+
+#define sensor2ValueEmpty 100
+#define sensor2ValueNote 1000
 
 ////////////////////////////////////////////////////////////////////// Arm //////////////////////////////////////////////////////////////////////
 
@@ -73,6 +76,8 @@
 #define arm_AMP_BACKWARD_angle 0
 
 #define arm_PASS_angle 0
+
+#define arm_SOURCE_angle 0
 
 #define arm_CLIMB_DEPLOY_angle 0
 #define arm_CLIMB_RETRACT_angle 0

@@ -1,84 +1,66 @@
 #include <Arduino.h>
 #include "Shooter.h"
 
-Shooter::Shooter(NoU_Motor* TopMotor, NoU_Motor* BottomMotor, State* state) : topMotor(TopMotor), bottomMotor(BottomMotor), robotState(state)
+Shooter::Shooter(NoU_Motor* Motor, State* state) : motor(Motor), robotState(state)
 { }
 
 uint8_t Shooter::begin(){
-    topMotor->setInverted(false);
-    bottomMotor->setInverted(true);
+    motor->setInverted(false);
 
     return 0;
 }
 
-uint8_t Shooter::update(){
-    if(robotState->isEnabled()){
-        if(topMotor->getOutput() != topSetPower){
-            topMotor->set(topSetPower);
-        }
-        if(bottomMotor->getOutput() != bottomSetPower){
-            bottomMotor->set(bottomSetPower);
-        }
+int8_t Shooter::update(){
+    // safety measure
+    if(!robotState->isEnabled()){
+        stop();
     }
 
-    // if we are shooting
-    // if(shooterMode == 2 || shooterMode == 3 || shooterMode == 4 || shooterMode == 5){
-    //     if(!robotState->hasNote() && !timerStarted){
-    //         // start timer
-    //         time = millis();
-    //         timerStarted = true;
-    //     }
-    //     if(timerStarted && millis()-time > shooterDelay*1000){
-    //         stop();
-    //         timerStarted = false;
-    //         return 1;
-    //     }
-    // }
-
-    return 0;
-}
-
-uint8_t Shooter::getMode(){
+    // update from action controller
+    switch (robotState->getNextAction()){
+        case STOP:
+            stop();
+            break;
+        case SUBWOOFER:
+            shooterMode = 2;
+            setPower = Shooter_SUBWOOFER_kS;
+            break;
+        case AMP_FORWARD:
+            shooterMode = 3;
+            setPower = Shooter_AMP_Forward_kS;
+            break;
+        case AMP_BACKWARD:
+            shooterMode = 4;
+            setPower = Shooter_AMP_Backward_kS;
+            break;
+        case PASS:
+            shooterMode = 5;
+            setPower = Shooter_PASS_kS;
+            break;
+        case DYNAMIC:
+            shooterMode = 6;
+            setPower = Shooter_DYNAMIC_kS;
+            break;
+        case SOURCE:
+            shooterMode = 7;
+            setPower = Shooter_SOURCE_kS;
+            break;
+        case -1: // custom speed, do nothing
+            break;
+    }
     return shooterMode;
 }
 
 void Shooter::stop(){
     shooterMode = 0;
-    topSetPower = 0.0;
-    bottomSetPower = 0.0;
+    setPower = 0.0;
+    execute();
 }
 
-void Shooter::run(double kS){
-    shooterMode = 1;
-    topSetPower = kS;
-}
-
-void Shooter::ampShot(){
-    shooterMode = 2;
-    topSetPower = AMP_Top_kS;
-    bottomSetPower = AMP_Bottom_kS;
-}
-
-void Shooter::subShot(){
-    shooterMode = 3;
-    topSetPower = SUBWOOFER_Top_kS;
-    bottomSetPower = SUBWOOFER_Bottom_kS;
-}
-
-void Shooter::podiumShot(){
-    shooterMode = 4;
-    topSetPower = PODIUM_Top_kS;
-    bottomSetPower = PODIUM_Bottom_kS;
-}
-
-void Shooter::passingShot(){
-    shooterMode = 5;
-    topSetPower = PASS_Top_kS;
-    bottomSetPower = PASS_Bottom_kS;
-}
-
-void Shooter::intake(){
-    shooterMode = 6;
-    topSetPower = INTAKE_Top_kS;
-    bottomSetPower = INTAKE_Bottom_kS;
+void Shooter::execute(){ // actually run the command
+    if(robotState->isEnabled()){
+        if(motor->getOutput() != setPower){
+            motor->set(setPower);
+        }
+    }
 }

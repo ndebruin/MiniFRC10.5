@@ -38,7 +38,7 @@ NoU_Motor backRightMotor(backRightMotorChannel);
 
 NoU_Servo armServo(armServoChannel);
 NoU_Motor intakeMotor(intakeMotorChannel);
-NoU_Motor intakeMotor(intakeMotorChannel);
+NoU_Motor shooterMotor(shooterMotorChannel);
 
 
 // create our subsystem objects
@@ -54,9 +54,9 @@ Intake intake = Intake(&intakeMotor, &state);
 
 // create our object definitions for fancy stuff (path following, autoaim, etc)
 
-PathFollower pathFollower = PathFollower(&drivetrain, &robotPose, &state);
+// PathFollower pathFollower = PathFollower(&drivetrain, &robotPose, &state);
 
-DynamicShooter shooterAim = DynamicShooter(&drivetrain, &arm, &shooter, &robotPose, &state);
+// DynamicShooter shooterAim = DynamicShooter(&drivetrain, &arm, &shooter, &robotPose, &state);
 
 
 void setup() 
@@ -78,8 +78,8 @@ void setup()
 
   robotPose.begin();
   
-  pathFollower.begin();
-  shooterAim.begin();
+  // pathFollower.begin();
+  // shooterAim.begin();
 }
 
 bool updateCoProc = false;
@@ -93,8 +93,8 @@ void loop()
   if(updateFromCoProc(&rxDataStruct)){
     robotPose.setRawPos(rxDataStruct.posX, rxDataStruct.posY);
     robotPose.setRawYaw(rxDataStruct.yaw);
-    shooterAim.setHaveTarget(rxDataStruct.camTargetDetected);
-    shooterAim.setRawPose(rxDataStruct.camX, rxDataStruct.camY);
+    // shooterAim.setHaveTarget(rxDataStruct.camTargetDetected);
+    // shooterAim.setRawPos(rxDataStruct.camX, rxDataStruct.camY);
   }
 
   // update from driver station
@@ -106,13 +106,19 @@ void loop()
     coProcSend(&txDataStruct);
   }
 
-  if(state.RobotMode()){ // if in teleop
+  if(state.RobotMode() == TELEOP_MODE){ // if in teleop
     float linearX = AlfredoConnect.getAxis(0, axisLinX);
     float linearY = AlfredoConnect.getAxis(0, axisLinY);
     float angularZ = AlfredoConnect.getAxis(0, axisAngZ);
 
     drivetrain.drive(linearX, linearY, angularZ);
   }
+
+  // let subsystems code update
+  drivetrain.update();
+  intake.update();
+  arm.update();
+  shooter.update();
 
 // example code for autoaim
   // if(autoaim){

@@ -13,22 +13,26 @@ class Arm
     public:
         Arm(NoU_Servo* ArmServo, State* state);
         uint8_t begin();
-        uint8_t update();
+        int8_t update();
 
-        // 0 - Stow
-        // 1 - Custom Angle
+        // -1 - Custom Angle
+        // 0 - Stop/Stow
         // 2 - Subwoofer
         // 3 - Amp Forward
         // 4 - Amp Backward
         // 5 - Pass
-        // 6 - Climb Up
-        // 7 - Climb Down
-        // 8 - Dynamic Shot
-        uint8_t getMode();
+        // 6 - Dynamic Shot
+        // 7 - Source Intake
+        // 8 - Climbers Up
+        // 9 - Climbers Down
+        int8_t getMode(){ return armMode; }
 
-        void setMode(uint8_t setMode);
+        void execute();
 
-        void set(double angle);
+        void set(double angle){
+            armMode = -1;
+            armSetAngle = angle;
+        }
 
         void setDynamic(double angle);
 
@@ -40,16 +44,17 @@ class Arm
 
         double armSetAngle;
 
-        // 0 - Stow
-        // 1 - Custom Angle
+        // -1 - Custom Angle
+        // 0 - Stop/Stow
         // 2 - Subwoofer
         // 3 - Amp Forward
         // 4 - Amp Backward
         // 5 - Pass
-        // 6 - Climb Up
-        // 7 - Climb Down
-        // 8 - Dynamic Shot
-        uint8_t armMode;
+        // 6 - Dynamic Shot
+        // 7 - Source Intake
+        // 8 - Climbers Up
+        // 9 - Climbers Down
+        int8_t armMode;
 
 };
 
