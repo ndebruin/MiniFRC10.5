@@ -90,17 +90,15 @@
 #define axisLinX 0
 #define axisAngZ 2
 
-#define buttonIntake 6 
+#define buttonIntake 6
 #define buttonExecute 7
 
-#define buttonAmp 1
+#define buttonAmpForward 1
 #define buttonPass 2
 #define buttonSub 0
-#define buttonPodium 3
 #define buttonSource 4
+#define buttonDynamic 5
 
-#define buttonClimb 5
-#define buttonDeployReaction 15
-#define buttonStowReaction 14
+#define buttonClimb 10
 
 #define buttonZeroYaw 9

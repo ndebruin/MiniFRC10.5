@@ -26,6 +26,7 @@ int8_t Intake::update(){
         case INTAKE:
             intakeMode = 2;
             setPower = Intake_IN_kS;
+            execute();
             break;
         case SUBWOOFER:
             intakeMode = 2;
@@ -50,8 +51,17 @@ int8_t Intake::update(){
         case SOURCE:
             intakeMode = 7;
             setPower = Intake_REVERSE_IN_kS;
+            execute();
+            break;
+        case CLIMBERS_UP:
+            stop();
+            break;
+        case CLIMBERS_DOWN:
+            stop();
             break;
         case -1: // custom speed, do nothing
+            break;
+        default:
             break;
     }
     return intakeMode;

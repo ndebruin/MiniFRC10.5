@@ -21,6 +21,9 @@ int8_t Shooter::update(){
         case STOP:
             stop();
             break;
+        case INTAKE:
+            stop(); // we want mechanisms to automatically go to the position to intake when the intake button is pressed, not when execute is pressed
+            break;
         case SUBWOOFER:
             shooterMode = 2;
             setPower = Shooter_SUBWOOFER_kS;
@@ -43,9 +46,18 @@ int8_t Shooter::update(){
             break;
         case SOURCE:
             shooterMode = 7;
-            setPower = Shooter_SOURCE_kS;
+            setPower = Shooter_SOURCE_kS; // we want mechanisms to automatically go to the position to intake when the intake button is pressed, not when execute is pressed
+            execute();
+            break;
+        case CLIMBERS_UP:
+            stop();
+            break;
+        case CLIMBERS_DOWN:
+            stop();
             break;
         case -1: // custom speed, do nothing
+            break;
+        default:
             break;
     }
     return shooterMode;

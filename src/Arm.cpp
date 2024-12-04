@@ -15,8 +15,10 @@ int8_t Arm::update(){
     // update from action controller
     switch (robotState->getNextAction()){
         case STOP:
-            armMode = 0;
-            armSetAngle = arm_STOW_angle;
+            home();
+            break;
+        case INTAKE:
+            home(); // we want mechanisms to automatically go to the position to intake when the intake button is pressed, not when execute is pressed
             break;
         case SUBWOOFER:
             armMode = 2;
@@ -41,16 +43,21 @@ int8_t Arm::update(){
         case SOURCE:
             armMode = 7;
             armSetAngle = arm_SOURCE_angle;
+            execute(); // we want mechanisms to automatically go to the position to intake when the intake button is pressed, not when execute is pressed
             break;
         case CLIMBERS_UP:
             armMode = 8;
             armSetAngle = arm_CLIMB_DEPLOY_angle;
+            execute(); // we want the arm to automatically go to the position to climb when the climb button is pressed, not when execute is pressed
             break;
         case CLIMBERS_DOWN:
             armMode = 9;
             armSetAngle = arm_CLIMB_RETRACT_angle;
+            execute(); // we want the arm to automatically go to the position to climb when the climb button is pressed, not when execute is pressed
             break;
         case -1: // custom angle, do nothing
+            break;
+        default:
             break;
     }
     return armMode;
@@ -62,4 +69,10 @@ void Arm::execute(){
             armServo->write(armSetAngle);
         }
     }
+}
+
+void Arm::home(){
+    armMode = 0;
+    armSetAngle = arm_STOW_angle;
+    execute();
 }

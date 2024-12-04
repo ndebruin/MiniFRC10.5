@@ -56,6 +56,8 @@ class Arm
         // 9 - Climbers Down
         int8_t armMode;
 
+        void home();
+
 };
 
 #endif
