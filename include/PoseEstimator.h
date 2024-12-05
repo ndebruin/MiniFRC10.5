@@ -3,8 +3,15 @@
 
 #include <Arduino.h>
 #include <Alfredo_NoU2.h>
+#include <TinyMatrixMath.hpp>
 
 #include "State.h"
+
+struct Pose{
+    double x;
+    double y;
+    double yaw;
+};
 
 class PoseEstimator
 {
@@ -18,22 +25,29 @@ class PoseEstimator
             return rawYaw - yawOffset;
         }
 
-        void setRawPos(int64_t PosX, int64_t PosY){
-            rawPosX = PosX;
-            rawPosY = PosY;
+        void setRawDeltaPos(int64_t PosX, int64_t PosY, uint64_t deltaNS){
+            
         }
+
         void setRawYaw(double Yaw){
+            currentGlobalPose.yaw = currentGlobalPose.yaw - yawOffset;
             rawYaw = Yaw;
         }
 
-    private:
+        void zeroYaw(){
+            yawOffset = rawYaw;
+        }
 
+
+
+    private:
+        Pose currentGlobalPose;
         double rawYaw;
 
         double yawOffset;
 
-        int64_t rawPosX;
-        int64_t rawPosY;
+        Pose GlobaltoRobotPose(Pose globalPose);
+        Pose RobottoGlobalPose(Pose robotPose);
 
         
  
