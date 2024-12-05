@@ -6,12 +6,7 @@ Drivetrain::Drivetrain(NoU_Motor* FrontLeftMotor, NoU_Motor* FrontRightMotor, No
                                     : frontLeftMotor(FrontLeftMotor), frontRightMotor(FrontRightMotor), backLeftMotor(BackLeftMotor), backRightMotor(BackRightMotor), pose(poseEstimator), robotState(RobotState)
 { }
 
-bool Drivetrain::isFieldOriented(){ return fieldOriented; }
 
-void Drivetrain::setFieldOriented(bool fieldOrientedEnabled)
-{
-    fieldOriented = fieldOrientedEnabled;
-}
 
 uint8_t Drivetrain::begin()
 {
@@ -33,18 +28,15 @@ uint8_t Drivetrain::update(){
 
 void Drivetrain::drive(float linearX, float linearY, float angularZ)
 {
-
+    Pose desiredCommand;
     if(fieldOriented)
     {
-        float temp = linearX * cos(pose->getYaw()) + linearY * sin(pose->getYaw());
-        linearY = -linearX * sin(pose->getYaw()) + linearY * cos(pose->getYaw());
-        linearX = temp;
+        desiredCommand = pose->GlobaltoRobotPose(desiredCommand);
     }
-
-    float frontLeftPower = linearX + linearY + angularZ;
-    float frontRightPower = -linearX + linearY - angularZ;
-    float backLeftPower = -linearX + linearY + angularZ;
-    float backRightPower = linearX + linearY - angularZ;
+    float frontLeftPower = desiredCommand.x + desiredCommand.y + desiredCommand.yaw;
+    float frontRightPower = -desiredCommand.x + desiredCommand.y - desiredCommand.yaw;
+    float backLeftPower = -desiredCommand.x + desiredCommand.y + desiredCommand.yaw;
+    float backRightPower = desiredCommand.x + desiredCommand.y - desiredCommand.yaw;
     float maxMagnitude = max(fabs(frontLeftPower), max(fabs(frontRightPower), max(fabs(backLeftPower), fabs(backRightPower))));
     if (maxMagnitude > 1) 
     {

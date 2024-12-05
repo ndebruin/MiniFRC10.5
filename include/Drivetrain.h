@@ -7,6 +7,9 @@
 #include "PoseEstimator.h"
 #include "State.h"
 
+#define FIELD_ORIENTED true
+#define ROBOT_ORIENTED false
+
 class Drivetrain
 {
     public:
@@ -14,9 +17,9 @@ class Drivetrain
         uint8_t begin();
         uint8_t update();
 
-        bool isFieldOriented();
+        bool getDriveMode(){ return fieldOriented; }
 
-        void setFieldOriented(bool fieldOrientedEnabled);
+        void setDriveMode(bool driveMode){ fieldOriented = driveMode; }
 
         // will either be field oriented or not depending on the seperately set field (setFieldOriented(bool))
         void drive(float linearX, float linearY, float angularZ);

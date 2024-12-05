@@ -3,9 +3,9 @@
 
 #include <Arduino.h>
 #include <Alfredo_NoU2.h>
-#include <TinyMatrixMath.hpp>
 
-#include "State.h"
+#include "coProcCom.h"
+#include "Constants.h"
 
 struct Pose{
     double x;
@@ -16,39 +16,35 @@ struct Pose{
 class PoseEstimator
 {
     public:
-        PoseEstimator();
+        PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, uint8_t rxPin, uint8_t txPin);
 
         uint8_t begin();
         uint8_t update();
 
         double getYaw(){
-            return rawYaw - yawOffset;
-        }
-
-        void setRawDeltaPos(int64_t PosX, int64_t PosY, uint64_t deltaNS){
-            
-        }
-
-        void setRawYaw(double Yaw){
-            currentGlobalPose.yaw = currentGlobalPose.yaw - yawOffset;
-            rawYaw = Yaw;
+            return currentGlobalPose.yaw;
         }
 
         void zeroYaw(){
             yawOffset = rawYaw;
         }
 
-
+        Pose GlobaltoRobotPose(Pose globalPose);
+        Pose RobottoGlobalPose(Pose robotPose);
 
     private:
+        HardwareSerial *serial;
+        uint baud;
+        uint8_t tx, rx;
+
+        CoProcStructRX rxDataStruct;
+
         Pose currentGlobalPose;
         double rawYaw;
 
         double yawOffset;
-
-        Pose GlobaltoRobotPose(Pose globalPose);
-        Pose RobottoGlobalPose(Pose robotPose);
-
+        
+        void supplementPose(Pose *mainPose, Pose addPose);
         
  
 };

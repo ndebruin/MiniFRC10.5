@@ -3,27 +3,19 @@
 
 // #include <Arduino.h>
 
-struct CoProcStructTX {
-  bool camFlash;    // 1 byte
-  // total: 1 byte
-};
+// struct CoProcStructTX {
+//   bool camFlash;    // 1 byte
+//   // total: 1 byte
+// };
 
 struct CoProcStructRX {
     int64_t posX;   // 8 bytes
     int64_t posY;   // 8 bytes
     float yaw;      // 4 bytes
-    int16_t camX;   // 2 bytes
-    int16_t camY;   // 2 bytes
-    bool camTargetDetected; // 1 byte
-    // total: 25 bytes
+    // total: 20 bytes
 };
 
 CoProcStructRX COPROCRXDATA;
-
-void coProcSend(const CoProcStructTX* table)
-{
-  Serial.write((const char*)table, sizeof(struct CoProcStructTX));  // 1 byte.
-}
 
 bool coProcReceive(CoProcStructRX* table)
 {
@@ -43,4 +35,4 @@ bool updateFromCoProc(CoProcStructRX* table)
     return false; // didn't update
 }
 
-#endif
+#endif // COPROCCOM_H

@@ -24,8 +24,10 @@
 
 BluetoothSerial SerialBluetooth; // bluetooth link
 
+HardwareSerial coProcSerial(2);
 
-PoseEstimator pose;
+PoseEstimator pose(&coProcSerial, baudRate, RXPin, TXPin);
+
 State state;
 
 // create our actual motors and servos
@@ -50,7 +52,6 @@ Shooter shooter = Shooter(&shooterMotor, &state);
 
 Intake intake = Intake(&intakeMotor, &state);
 
-
 // create our object definitions for fancy stuff (path following, autoaim, etc)
 
 // PathFollower pathFollower = PathFollower(&drivetrain, &pose, &state);
@@ -68,32 +69,29 @@ void runStateSelector(); // shot presets, climber, and intake
 
 ////////////////////////////////////////////////////////////////////// Global Variables //////////////////////////////////////////////////////////////////////
 
-bool updateCoProc = false;
 
-CoProcStructTX txDataStruct;
-CoProcStructRX rxDataStruct;
 
 ////////////////////////////////////////////////////////////////////// setup() //////////////////////////////////////////////////////////////////////
 
 void setup() 
 {
-  Serial.begin(9600); // start coprocesser connection
-
   // start up bluetooth link for alfredoconnect
   SerialBluetooth.begin(robotName);
   AlfredoConnect.begin(SerialBluetooth);
 
   // start RSL
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
+  RSL::initialize();
 
+  // start subsystems
   drivetrain.begin();
   arm.begin();
   shooter.begin();
   intake.begin();
 
+  // start our pose estimator
   pose.begin();
   
+  // start advanced controllers
   // pathFollower.begin();
   // shooterAim.begin();
 }
@@ -110,21 +108,17 @@ void loop()
     runDrivetrain();
     // handle state machine decisions    
     runStateSelector();
+
+    if(AlfredoConnect.buttonHeld(0, buttonZeroYaw)){ // reset IMU yaw
+      pose.zeroYaw();
+    }
+    if(AlfredoConnect.buttonHeld(0, buttonEnableFieldOriented)){ // enable / disable field oriented driving
+      drivetrain.setDriveMode(FIELD_ORIENTED);
+    }
+    else if(AlfredoConnect.buttonHeld(0, buttonDisableFieldOriented)){
+      drivetrain.setDriveMode(ROBOT_ORIENTED);
+    }
   }
-
-  
-
-// example code for autoaim
-  // if(autoaim){
-  //   txDataStruct.camFlash = true; // enable the flashlight on the ESP32Cam
-  //   updateCoProc = true;
-  //   shooterAim.enable();
-  // }
-  // else{
-  //   txDataStruct.camFlash = false;
-  //   updateCoProc = true;
-  //   shooterAim.disable();
-  // }
 }
 
 ////////////////////////////////////////////////////////////////////// Function Definitions //////////////////////////////////////////////////////////////////////
@@ -136,26 +130,24 @@ void asyncUpdate(){
   arm.update();
   shooter.update();
 
-  // let controllers update
+  // update our pose
   pose.update();
+
+  // let advanced controllers update
   // shooterAim.update();
   // pathFollower.update();
 
   // update from driver station
   AlfredoConnect.update();
 
-  // update data from the coproc
-  if(updateFromCoProc(&rxDataStruct)){
-    pose.setRawPos(rxDataStruct.posX, rxDataStruct.posY);
-    pose.setRawYaw(rxDataStruct.yaw);
-    // shooterAim.setHaveTarget(rxDataStruct.camTargetDetected);
-    // shooterAim.setRawPos(rxDataStruct.camX, rxDataStruct.camY);
-  }
+  // rsl code
+  RSL::update();
 
-  // if we need to send data to the coProc
-  if(updateCoProc){
-    updateCoProc = false;
-    coProcSend(&txDataStruct);
+  if(state.isEnabled()){
+    RSL::setState(RSL_ENABLED);
+  }
+  else if(!state.isEnabled()){
+    RSL::setState(RSL_OFF);
   }
 }
 

@@ -102,3 +102,12 @@
 #define buttonClimb 10
 
 #define buttonZeroYaw 9
+#define buttonEnableFieldOriented 15
+#define buttonDisableFieldOriented 16
+
+////////////////////////////////////////////////////////////////////// Pose Estimator //////////////////////////////////////////////////////////////////////
+#define MOUSE_CONVERSION_FACTOR (1/1000) * 25.4 // 1000 Dots per inch converted to mm
+
+#define baudRate 9600
+#define TXPin 26
+#define RXPin 25
