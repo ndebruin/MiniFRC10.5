@@ -2,10 +2,10 @@
 
 ////////////////////////////////////////////////////////////////////// Drivetrain //////////////////////////////////////////////////////////////////////
 
-#define frontLeftMotorChannel 1
+#define frontLeftMotorChannel 1 // no clue if these are right lmaoooooooo
 #define frontRightMotorChannel 2
-#define backLeftMotorChannel 3
-#define backRightMotorChannel 4
+#define backLeftMotorChannel 5
+#define backRightMotorChannel 6 
 
 // strafe parameters
 #define linX_kS 0.0
@@ -33,30 +33,33 @@
 
 ////////////////////////////////////////////////////////////////////// Shooter //////////////////////////////////////////////////////////////////////
 
-#define shooterMotorChannel 5
+#define shooterMotorChannel 4
 
 #define Shooter_AMP_Forward_kS 0.0
-#define Shooter_AMP_Backward_kS 0.0
+#define Shooter_AMP_Backward_kS 0.7
 
-#define Shooter_SUBWOOFER_kS 0.0
+#define Shooter_SUBWOOFER_kS 1.0
 
-#define Shooter_DYNAMIC_kS 0.0
+#define Shooter_DYNAMIC_kS 1.0
 
-#define Shooter_PASS_kS 0.0
+#define Shooter_PASS_kS 1.0
 
-#define Shooter_SOURCE_kS -0.0
+#define Shooter_SOURCE_kS -0.7
 
 ////////////////////////////////////////////////////////////////////// Indexer //////////////////////////////////////////////////////////////////////
 
-#define intakeMotorChannel 6
+#define intakeMotorChannel 3
 
-#define Intake_IN_kS 0.0
-#define Intake_REVERSE_IN_kS -0.0
+#define Intake_IN_kS 1.0
+#define Intake_REVERSE_IN_kS -1.0
 
-#define Intake_SHOOT_kS 0.0
-#define Intake_AMP_kS -0.0
+#define Intake_SHOOT_kS 1.0
+#define Intake_AMP_kS -1.0
 
-#define pinFeedbackLED 5
+#define pinFeedbackLED 26
+
+#define pinSensor1 34
+#define pinSensor2 35
 
 #define sensor1ValueEmpty 100
 #define sensor1ValueNote 1000
@@ -68,19 +71,19 @@
 
 #define armServoChannel 1
 
-#define arm_STOW_angle 0
+#define arm_STOW_angle 22
 
-#define arm_SUB_angle 0
+#define arm_SUB_angle 65
 
-#define arm_AMP_FORWARD_angle 0
-#define arm_AMP_BACKWARD_angle 0
+#define arm_AMP_FORWARD_angle 90
+#define arm_AMP_BACKWARD_angle 90
 
-#define arm_PASS_angle 0
+#define arm_PASS_angle 25
 
-#define arm_SOURCE_angle 0
+#define arm_SOURCE_angle 90
 
-#define arm_CLIMB_DEPLOY_angle 0
-#define arm_CLIMB_RETRACT_angle 0
+#define arm_CLIMB_DEPLOY_angle 90
+#define arm_CLIMB_RETRACT_angle 90
 
 ////////////////////////////////////////////////////////////////////// Controller //////////////////////////////////////////////////////////////////////
 
@@ -93,21 +96,24 @@
 #define buttonIntake 6
 #define buttonExecute 7
 
-#define buttonAmpForward 1
-#define buttonPass 2
+#define buttonAmpForward 2
+#define buttonPass 1
 #define buttonSub 0
-#define buttonSource 4
+#define buttonSource 3
 #define buttonDynamic 5
 
-#define buttonClimb 10
+#define buttonClimb 4
 
-#define buttonZeroYaw 9
-#define buttonEnableFieldOriented 15
-#define buttonDisableFieldOriented 16
+#define buttonZeroYaw 8
+#define buttonEnableFieldOriented 10
+#define buttonDisableFieldOriented 11
+
+#define buttonEnable 9
+#define buttonDisable 16
 
 ////////////////////////////////////////////////////////////////////// Pose Estimator //////////////////////////////////////////////////////////////////////
 #define MOUSE_CONVERSION_FACTOR (1/1000) * 25.4 // 1000 Dots per inch converted to mm
 
 #define baudRate 9600
-#define TXPin 26
+#define TXPin 5 // doesn't matter we're not transmitting lmao
 #define RXPin 25

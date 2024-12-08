@@ -5,7 +5,11 @@ Intake::Intake(NoU_Motor* IntakeMotor, State* state) : intakeMotor(IntakeMotor),
 { }
 
 uint8_t Intake::begin(){
-    intakeMotor->setInverted(true);
+    intakeMotor->setInverted(false);
+
+    pinMode(pinFeedbackLED, OUTPUT);
+    pinMode(pinSensor1,INPUT);
+    pinMode(pinSensor2,INPUT);
 
     stop();
 
@@ -24,7 +28,7 @@ int8_t Intake::update(){
             stop();
             break;
         case INTAKE:
-            intakeMode = 2;
+            intakeMode = 1;
             setPower = Intake_IN_kS;
             execute();
             break;
@@ -59,16 +63,29 @@ int8_t Intake::update(){
         case CLIMBERS_DOWN:
             stop();
             break;
-        case -1: // custom speed, do nothing
-            break;
         default:
             break;
     }
     return intakeMode;
+
+    rawSensor1 = analogRead(pinSensor1);
+    rawSensor2 = analogRead(pinSensor2);
+
+    if(rawSensor1 > sensor1ValueEmpty || rawSensor2 > sensor2ValueEmpty){
+        robotState->setNote(true);
+        digitalWrite(pinFeedbackLED, HIGH);
+    }
+    else{
+        robotState->setNote(false);
+        digitalWrite(pinFeedbackLED, LOW);
+    }
 }
 
 void Intake::execute(){
     if(robotState->isEnabled()){
+        if(intakeMode == INTAKE && robotState->hasNote()){ // autoStop Intake
+            robotState->setNextAction(STOP);
+        }
         if(setPower != intakeMotor->getOutput()){
             intakeMotor->set(setPower);
         }

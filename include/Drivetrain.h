@@ -5,6 +5,8 @@
 #include <Alfredo_NoU2.h>
 
 #include "PoseEstimator.h"
+
+
 #include "State.h"
 
 #define FIELD_ORIENTED true
@@ -38,7 +40,7 @@ class Drivetrain
         PoseEstimator* pose;
         State* robotState;
 
-        bool fieldOriented;
+        bool fieldOriented = false;
  
 };
 

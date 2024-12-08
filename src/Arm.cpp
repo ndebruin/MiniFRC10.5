@@ -12,6 +12,9 @@ uint8_t Arm::begin(){
 }
 
 int8_t Arm::update(){
+    // if(!robotState->isEnabled()){
+    //     armServo->write(armSetAngle);
+    // }
     // update from action controller
     switch (robotState->getNextAction()){
         case STOP:
@@ -55,8 +58,6 @@ int8_t Arm::update(){
             armSetAngle = arm_CLIMB_RETRACT_angle;
             execute(); // we want the arm to automatically go to the position to climb when the climb button is pressed, not when execute is pressed
             break;
-        case -1: // custom angle, do nothing
-            break;
         default:
             break;
     }
@@ -65,10 +66,9 @@ int8_t Arm::update(){
 
 void Arm::execute(){
     if(robotState->isEnabled()){
-        if(armServo->getDegrees() != armSetAngle){
-            armServo->write(armSetAngle);
-        }
+        armServo->write(armSetAngle);
     }
+
 }
 
 void Arm::home(){

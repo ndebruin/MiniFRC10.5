@@ -32,6 +32,8 @@ class PoseEstimator
         Pose GlobaltoRobotPose(Pose globalPose);
         Pose RobottoGlobalPose(Pose robotPose);
 
+        Pose FieldOrientedDrive(Pose globalPose);
+
     private:
         HardwareSerial *serial;
         uint baud;
@@ -45,6 +47,9 @@ class PoseEstimator
         double yawOffset;
         
         void supplementPose(Pose *mainPose, Pose addPose);
+
+        bool coProcReceive(CoProcStructRX* table);
+        bool updateFromCoProc();
         
  
 };

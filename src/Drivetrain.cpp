@@ -24,19 +24,24 @@ uint8_t Drivetrain::update(){
     if(!robotState->isEnabled()){
         stop();
     }
+
+    return 0;
 }
 
 void Drivetrain::drive(float linearX, float linearY, float angularZ)
 {
     Pose desiredCommand;
+    desiredCommand.x = linearX;
+    desiredCommand.y = linearY;
+    desiredCommand.yaw = angularZ;
     if(fieldOriented)
     {
-        desiredCommand = pose->GlobaltoRobotPose(desiredCommand);
+        desiredCommand = pose->FieldOrientedDrive(desiredCommand);
     }
-    float frontLeftPower = desiredCommand.x + desiredCommand.y + desiredCommand.yaw;
-    float frontRightPower = -desiredCommand.x + desiredCommand.y - desiredCommand.yaw;
-    float backLeftPower = -desiredCommand.x + desiredCommand.y + desiredCommand.yaw;
-    float backRightPower = desiredCommand.x + desiredCommand.y - desiredCommand.yaw;
+    float frontLeftPower = desiredCommand.y + desiredCommand.x + desiredCommand.yaw;
+    float frontRightPower = -desiredCommand.y + desiredCommand.x - desiredCommand.yaw;
+    float backLeftPower = -desiredCommand.y + desiredCommand.x + desiredCommand.yaw;
+    float backRightPower = desiredCommand.y + desiredCommand.x - desiredCommand.yaw;
     float maxMagnitude = max(fabs(frontLeftPower), max(fabs(frontRightPower), max(fabs(backLeftPower), fabs(backRightPower))));
     if (maxMagnitude > 1) 
     {

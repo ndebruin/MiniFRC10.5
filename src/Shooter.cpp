@@ -55,8 +55,6 @@ int8_t Shooter::update(){
         case CLIMBERS_DOWN:
             stop();
             break;
-        case -1: // custom speed, do nothing
-            break;
         default:
             break;
     }

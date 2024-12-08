@@ -12,7 +12,6 @@
 #include "Drivetrain.h"
 
 // other custom code
-#include "coProcCom.h"
 #include "State.h"
 #include "PoseEstimator.h"
 #include "PathFollower.h"
@@ -41,13 +40,11 @@ NoU_Servo armServo(armServoChannel);
 NoU_Motor intakeMotor(intakeMotorChannel);
 NoU_Motor shooterMotor(shooterMotorChannel);
 
-
 // create our subsystem objects
 
 Drivetrain drivetrain = Drivetrain(&frontLeftMotor, &frontRightMotor, &backLeftMotor, &backRightMotor, &pose, &state);
 
-Arm arm = Arm(&armServo, &state);
-
+Arm arm = Arm(&armServo, &state); 
 Shooter shooter = Shooter(&shooterMotor, &state);
 
 Intake intake = Intake(&intakeMotor, &state);
@@ -69,7 +66,8 @@ void runStateSelector(); // shot presets, climber, and intake
 
 ////////////////////////////////////////////////////////////////////// Global Variables //////////////////////////////////////////////////////////////////////
 
-
+bool justExecuted = false;
+bool justIntake = false;
 
 ////////////////////////////////////////////////////////////////////// setup() //////////////////////////////////////////////////////////////////////
 
@@ -102,7 +100,11 @@ void loop()
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  // TELEOP
+  // SerialBluetooth.println("sensor1: " + String(intake.sensor1Value()) + " sensor2: " + String(intake.sensor2Value()));
+
+  // SerialBluetooth.println(pose.getYaw());
+  SerialBluetooth.println(state.getNextAction());
+
   if(state.RobotMode() == TELEOP_MODE){ // if in teleop
     // handle drivetrain
     runDrivetrain();
@@ -170,8 +172,13 @@ void runDrivetrain(){
 
 void runStateSelector(){
   // this giant mess of if statements handles all the state transitions
-  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() < 2){ // we want to only go to an intake state if we're not currently doing something else
+  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE){ // we want to only go to an intake state if we're not currently doing something else
     state.setNextAction(INTAKE);
+    justIntake = true;
+  }
+  else if(justIntake && !AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE){ // intake should stop if we let go of the button
+    state.setNextAction(STOP);
+    justIntake = false;
   }
   else if(AlfredoConnect.buttonHeld(0, buttonSub)){
     state.setNextAction(SUBWOOFER);
@@ -194,7 +201,7 @@ void runStateSelector(){
 
   // we only want to do this if we're currently in another state
   // (as in, if we are trying to shoot)
-  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() > 1){ 
+  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() > INTAKE){ 
     intake.execute();
   }
 
@@ -202,6 +209,12 @@ void runStateSelector(){
   if(AlfredoConnect.buttonHeld(0, buttonExecute)){
     arm.execute();
     shooter.execute();
+    justExecuted = true;
+  }
+  if(justExecuted && !AlfredoConnect.buttonHeld(0, buttonExecute) && state.getNextAction() > INTAKE){
+    SerialBluetooth.println("HELP ME IM STUCK");
+    state.setNextAction(STOP);
+    justExecuted = false;
   }
 
   // if we were previously in the climbers up state, but are no longer holding the button, we want to transition into the climbers down state
@@ -209,6 +222,14 @@ void runStateSelector(){
   // we can transition out of it if needed
   if(state.getNextAction() == CLIMBERS_UP && !AlfredoConnect.buttonHeld(0, buttonClimb)){ 
     state.setNextAction(CLIMBERS_DOWN);
+  }
+
+  // enable / disable logic
+  if(AlfredoConnect.buttonHeld(0, buttonEnable)){
+    state.setEnable(true);
+  }
+  else if(AlfredoConnect.buttonHeld(0, buttonDisable)){
+    state.setEnable(false);
   }
 }
 

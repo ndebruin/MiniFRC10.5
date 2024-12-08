@@ -42,6 +42,9 @@ class Intake
             execute();
         }
 
+        uint16_t sensor1Value() {return rawSensor1;}
+        uint16_t sensor2Value() {return rawSensor2;}
+
     private:
         NoU_Motor* intakeMotor;
 
