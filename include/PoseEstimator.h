@@ -32,8 +32,6 @@ class PoseEstimator
         Pose GlobaltoRobotPose(Pose globalPose);
         Pose RobottoGlobalPose(Pose robotPose);
 
-        Pose FieldOrientedDrive(Pose globalPose);
-
     private:
         HardwareSerial *serial;
         uint baud;

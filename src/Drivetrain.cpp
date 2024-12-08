@@ -30,18 +30,17 @@ uint8_t Drivetrain::update(){
 
 void Drivetrain::drive(float linearX, float linearY, float angularZ)
 {
-    Pose desiredCommand;
-    desiredCommand.x = linearX;
-    desiredCommand.y = linearY;
-    desiredCommand.yaw = angularZ;
-    if(fieldOriented)
-    {
-        desiredCommand = pose->FieldOrientedDrive(desiredCommand);
-    }
-    float frontLeftPower = desiredCommand.y + desiredCommand.x + desiredCommand.yaw;
-    float frontRightPower = -desiredCommand.y + desiredCommand.x - desiredCommand.yaw;
-    float backLeftPower = -desiredCommand.y + desiredCommand.x + desiredCommand.yaw;
-    float backRightPower = desiredCommand.y + desiredCommand.x - desiredCommand.yaw;
+    // if(fieldOriented)
+    // {
+            
+    //     float temp =  linearY* cos(pose->getYaw()*DEG_TO_RAD) + linearX* sin(pose->getYaw()*DEG_TO_RAD); // this is the systems of equations form of a 2x2 rotation matrix
+    //     linearY = -linearY * sin(pose->getYaw()*DEG_TO_RAD) + linearX* cos(pose->getYaw()*DEG_TO_RAD); // this is also the commonly used field oriented drive equations
+    //     linearX = temp;
+    // }
+    float frontLeftPower  = linearY + angularZ + linearX;
+    float frontRightPower = linearY - angularZ - linearX;
+    float backLeftPower   = linearY + angularZ - (linearX*strafeCompensation);
+    float backRightPower  = linearY - angularZ + (linearX*strafeCompensation);
     float maxMagnitude = max(fabs(frontLeftPower), max(fabs(frontRightPower), max(fabs(backLeftPower), fabs(backRightPower))));
     if (maxMagnitude > 1) 
     {

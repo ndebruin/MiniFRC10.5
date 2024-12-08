@@ -46,7 +46,7 @@ int8_t Arm::update(){
         case SOURCE:
             armMode = 7;
             armSetAngle = arm_SOURCE_angle;
-            execute(); // we want mechanisms to automatically go to the position to intake when the intake button is pressed, not when execute is pressed
+            // execute(); // we want mechanisms to automatically go to the position to intake when the intake button is pressed, not when execute is pressed
             break;
         case CLIMBERS_UP:
             armMode = 8;

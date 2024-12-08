@@ -2,10 +2,13 @@
 
 ////////////////////////////////////////////////////////////////////// Drivetrain //////////////////////////////////////////////////////////////////////
 
-#define frontLeftMotorChannel 1 // no clue if these are right lmaoooooooo
-#define frontRightMotorChannel 2
-#define backLeftMotorChannel 5
-#define backRightMotorChannel 6 
+#define frontLeftMotorChannel 5
+#define frontRightMotorChannel 1
+#define backLeftMotorChannel 6
+#define backRightMotorChannel 2 
+
+#define strafeCompensation 0.9  // this helps with the fact that the back wheels are further out and therefore have more torque on the robot
+                                // determined experimentally
 
 // strafe parameters
 #define linX_kS 0.0
@@ -44,7 +47,7 @@
 
 #define Shooter_PASS_kS 1.0
 
-#define Shooter_SOURCE_kS -0.7
+#define Shooter_SOURCE_kS -1.0
 
 ////////////////////////////////////////////////////////////////////// Indexer //////////////////////////////////////////////////////////////////////
 
@@ -54,18 +57,16 @@
 #define Intake_REVERSE_IN_kS -1.0
 
 #define Intake_SHOOT_kS 1.0
-#define Intake_AMP_kS -1.0
+#define Intake_AMP_kS -0.9
 
 #define pinFeedbackLED 26
 
-#define pinSensor1 34
-#define pinSensor2 35
+#define pinSensor1 35
+#define pinSensor2 34
 
-#define sensor1ValueEmpty 100
 #define sensor1ValueNote 1000
 
-#define sensor2ValueEmpty 100
-#define sensor2ValueNote 1000
+#define sensor2ValueNote 100
 
 ////////////////////////////////////////////////////////////////////// Arm //////////////////////////////////////////////////////////////////////
 
@@ -73,17 +74,17 @@
 
 #define arm_STOW_angle 22
 
-#define arm_SUB_angle 65
+#define arm_SUB_angle 67
 
-#define arm_AMP_FORWARD_angle 90
-#define arm_AMP_BACKWARD_angle 90
+#define arm_AMP_FORWARD_angle 180
+#define arm_AMP_BACKWARD_angle 210
 
 #define arm_PASS_angle 25
 
 #define arm_SOURCE_angle 90
 
-#define arm_CLIMB_DEPLOY_angle 90
-#define arm_CLIMB_RETRACT_angle 90
+#define arm_CLIMB_DEPLOY_angle 190
+#define arm_CLIMB_RETRACT_angle 40
 
 ////////////////////////////////////////////////////////////////////// Controller //////////////////////////////////////////////////////////////////////
 
@@ -96,13 +97,16 @@
 #define buttonIntake 6
 #define buttonExecute 7
 
+#define buttonSource 4
+
 #define buttonAmpForward 2
 #define buttonPass 1
 #define buttonSub 0
-#define buttonSource 3
+#define buttonAmpBackward 3
 #define buttonDynamic 5
 
-#define buttonClimb 4
+#define buttonClimbUp 12
+#define buttonClimbDown 13
 
 #define buttonZeroYaw 8
 #define buttonEnableFieldOriented 10

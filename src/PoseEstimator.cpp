@@ -44,16 +44,6 @@ Pose PoseEstimator::GlobaltoRobotPose(Pose globalPose){
     return robotPose;
 }
 
-Pose PoseEstimator::FieldOrientedDrive(Pose globalPose){
-    Pose robotPose;
-
-    robotPose.yaw = globalPose.yaw;
-    robotPose.x = globalPose.x * cos(currentGlobalPose.yaw) + globalPose.y * sin(currentGlobalPose.yaw); // this is the systems of equations form of a 2x2 rotation matrix
-    robotPose.y = -globalPose.x * sin(currentGlobalPose.yaw) + globalPose.y * cos(currentGlobalPose.yaw); // this is also the commonly used field oriented drive equations
-
-    return robotPose;
-}
-
 void PoseEstimator::supplementPose(Pose *mainPose, Pose addPose){
     mainPose->yaw = addPose.yaw;
     mainPose->x += addPose.x;

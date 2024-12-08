@@ -85,6 +85,7 @@ void setup()
   arm.begin();
   shooter.begin();
   intake.begin();
+  pinMode(pinSensor1, INPUT);
 
   // start our pose estimator
   pose.begin();
@@ -100,10 +101,10 @@ void loop()
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  // SerialBluetooth.println("sensor1: " + String(intake.sensor1Value()) + " sensor2: " + String(intake.sensor2Value()));
+  SerialBluetooth.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
   // SerialBluetooth.println(pose.getYaw());
-  SerialBluetooth.println(state.getNextAction());
+  // SerialBluetooth.println(state.getNextAction());
 
   if(state.RobotMode() == TELEOP_MODE){ // if in teleop
     // handle drivetrain
@@ -162,7 +163,7 @@ double deadzone(double rawJoy){
 
 void runDrivetrain(){
   float linearX = deadzone(AlfredoConnect.getAxis(0, axisLinX));
-  float linearY = deadzone(AlfredoConnect.getAxis(0, axisLinY));
+  float linearY = -deadzone(AlfredoConnect.getAxis(0, axisLinY));
   float angularZ = deadzone(AlfredoConnect.getAxis(0, axisAngZ));
   
   drivetrain.drive(linearX, linearY, angularZ);
@@ -172,11 +173,17 @@ void runDrivetrain(){
 
 void runStateSelector(){
   // this giant mess of if statements handles all the state transitions
-  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE){ // we want to only go to an intake state if we're not currently doing something else
+  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE && !state.hasNote()){ // we want to only go to an intake state if we're not currently doing something else
     state.setNextAction(INTAKE);
     justIntake = true;
   }
-  else if(justIntake && !AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE){ // intake should stop if we let go of the button
+  else if(AlfredoConnect.buttonHeld(0, buttonSource)){ // manual "reverse"
+    state.setNextAction(SOURCE);
+    justIntake = true;
+  }
+  else if(justIntake && 
+          (!AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE) || 
+          (!AlfredoConnect.buttonHeld(0, buttonSource) && state.getNextAction() == SOURCE)){ // intake should stop if we let go of the button for source or ground
     state.setNextAction(STOP);
     justIntake = false;
   }
@@ -189,14 +196,17 @@ void runStateSelector(){
   else if(AlfredoConnect.buttonHeld(0, buttonPass)){
     state.setNextAction(PASS);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonSource)){
-    state.setNextAction(SOURCE);
+  else if(AlfredoConnect.buttonHeld(0, buttonAmpBackward)){
+    state.setNextAction(AMP_BACKWARD);
   }
   else if(AlfredoConnect.buttonHeld(0, buttonDynamic)){
     state.setNextAction(DYNAMIC);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonClimb)){
+  else if(AlfredoConnect.buttonHeld(0, buttonClimbUp)){
     state.setNextAction(CLIMBERS_UP);
+  }
+  else if(AlfredoConnect.buttonHeld(0, buttonClimbDown)){
+    state.setNextAction(CLIMBERS_DOWN);
   }
 
   // we only want to do this if we're currently in another state
@@ -205,6 +215,8 @@ void runStateSelector(){
     intake.execute();
   }
 
+
+
   // actually have the execute button do it's thing
   if(AlfredoConnect.buttonHeld(0, buttonExecute)){
     arm.execute();
@@ -212,16 +224,8 @@ void runStateSelector(){
     justExecuted = true;
   }
   if(justExecuted && !AlfredoConnect.buttonHeld(0, buttonExecute) && state.getNextAction() > INTAKE){
-    SerialBluetooth.println("HELP ME IM STUCK");
     state.setNextAction(STOP);
     justExecuted = false;
-  }
-
-  // if we were previously in the climbers up state, but are no longer holding the button, we want to transition into the climbers down state
-  // (which is not the arm stow state)
-  // we can transition out of it if needed
-  if(state.getNextAction() == CLIMBERS_UP && !AlfredoConnect.buttonHeld(0, buttonClimb)){ 
-    state.setNextAction(CLIMBERS_DOWN);
   }
 
   // enable / disable logic
