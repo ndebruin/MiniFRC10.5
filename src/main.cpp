@@ -23,7 +23,7 @@
 
 BluetoothSerial SerialBluetooth; // bluetooth link
 
-HardwareSerial coProcSerial(2);
+HardwareSerial coProcSerial(1);
 
 PoseEstimator pose(&coProcSerial, baudRate, RXPin, TXPin);
 
