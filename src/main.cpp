@@ -2,8 +2,9 @@
 
 // Alfredo Stuff
 #include <Alfredo_NoU2.h>
-#include <BluetoothSerial.h>
-#include <AlfredoConnect.h>
+// #include <BluetoothSerial.h>
+// #include <AlfredoConnect.h>
+#include <PestoLink-Receive.h>
 
 // Subsystems
 #include "Arm.h"
@@ -21,7 +22,7 @@
 
 ////////////////////////////////////////////////////////////////////// Hardware Declarations //////////////////////////////////////////////////////////////////////
 
-BluetoothSerial SerialBluetooth; // bluetooth link
+// BluetoothSerial SerialBluetooth; // bluetooth link
 
 HardwareSerial coProcSerial(1);
 
@@ -74,8 +75,10 @@ bool justIntake = false;
 void setup() 
 {
   // start up bluetooth link for alfredoconnect
-  SerialBluetooth.begin(robotName);
-  AlfredoConnect.begin(SerialBluetooth);
+  // SerialBluetooth.begin(robotName);
+  // AlfredoConnect.begin(SerialBluetooth);
+
+  PestoLink.begin(robotName);
 
   // start RSL
   RSL::initialize();
@@ -101,7 +104,7 @@ void loop()
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  SerialBluetooth.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
+  // SerialBluetooth.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
   // SerialBluetooth.println(pose.getYaw());
   // SerialBluetooth.println(state.getNextAction());
@@ -112,13 +115,13 @@ void loop()
     // handle state machine decisions    
     runStateSelector();
 
-    if(AlfredoConnect.buttonHeld(0, buttonZeroYaw)){ // reset IMU yaw
+    if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
       pose.zeroYaw();
     }
-    if(AlfredoConnect.buttonHeld(0, buttonEnableFieldOriented)){ // enable / disable field oriented driving
+    if(PestoLink.buttonHeld(buttonEnableFieldOriented)){ // enable / disable field oriented driving
       drivetrain.setDriveMode(FIELD_ORIENTED);
     }
-    else if(AlfredoConnect.buttonHeld(0, buttonDisableFieldOriented)){
+    else if(PestoLink.buttonHeld(buttonDisableFieldOriented)){
       drivetrain.setDriveMode(ROBOT_ORIENTED);
     }
   }
@@ -141,7 +144,9 @@ void asyncUpdate(){
   // pathFollower.update();
 
   // update from driver station
-  AlfredoConnect.update();
+  if(!PestoLink.update()){
+    state.setEnable(DISABLE); // disable if we disconnect
+  }
 
   // rsl code
   RSL::update();
@@ -162,9 +167,9 @@ double deadzone(double rawJoy){
 }
 
 void runDrivetrain(){
-  float linearX = deadzone(AlfredoConnect.getAxis(0, axisLinX));
-  float linearY = -deadzone(AlfredoConnect.getAxis(0, axisLinY));
-  float angularZ = deadzone(AlfredoConnect.getAxis(0, axisAngZ));
+  float linearX = deadzone(PestoLink.getAxis(axisLinX));
+  float linearY = -deadzone(PestoLink.getAxis(axisLinY));
+  float angularZ = deadzone(PestoLink.getAxis(axisAngZ)) * 0.8;
   
   drivetrain.drive(linearX, linearY, angularZ);
 
@@ -173,67 +178,67 @@ void runDrivetrain(){
 
 void runStateSelector(){
   // this giant mess of if statements handles all the state transitions
-  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE && !state.hasNote()){ // we want to only go to an intake state if we're not currently doing something else
+  if(PestoLink.buttonHeld(buttonIntake) && state.getNextAction() <= INTAKE && !state.hasNote()){ // we want to only go to an intake state if we're not currently doing something else
     state.setNextAction(INTAKE);
     justIntake = true;
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonSource)){ // manual "reverse"
+  else if(PestoLink.buttonHeld(buttonSource)){ // manual "reverse"
     state.setNextAction(SOURCE);
     justIntake = true;
   }
   else if(justIntake && 
-          (!AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() <= INTAKE) || 
-          (!AlfredoConnect.buttonHeld(0, buttonSource) && state.getNextAction() == SOURCE)){ // intake should stop if we let go of the button for source or ground
+          (!PestoLink.buttonHeld(buttonIntake) && state.getNextAction() <= INTAKE) || 
+          (!PestoLink.buttonHeld(buttonSource) && state.getNextAction() == SOURCE)){ // intake should stop if we let go of the button for source or ground
     state.setNextAction(STOP);
     justIntake = false;
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonSub)){
+  else if(PestoLink.buttonHeld(buttonSub)){
     state.setNextAction(SUBWOOFER);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonAmpForward)){
+  else if(PestoLink.buttonHeld(buttonAmpForward)){
     state.setNextAction(AMP_FORWARD);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonPass)){
+  else if(PestoLink.buttonHeld(buttonPass)){
     state.setNextAction(PASS);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonAmpBackward)){
+  else if(PestoLink.buttonHeld(buttonAmpBackward)){
     state.setNextAction(AMP_BACKWARD);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonDynamic)){
+  else if(PestoLink.buttonHeld(buttonDynamic)){
     state.setNextAction(DYNAMIC);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonClimbUp)){
+  else if(PestoLink.buttonHeld(buttonClimbUp)){
     state.setNextAction(CLIMBERS_UP);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonClimbDown)){
+  else if(PestoLink.buttonHeld(buttonClimbDown)){
     state.setNextAction(CLIMBERS_DOWN);
   }
 
   // we only want to do this if we're currently in another state
   // (as in, if we are trying to shoot)
-  if(AlfredoConnect.buttonHeld(0, buttonIntake) && state.getNextAction() > INTAKE){ 
+  if(PestoLink.buttonHeld(buttonIntake) && state.getNextAction() > INTAKE){ 
     intake.execute();
   }
 
 
 
   // actually have the execute button do it's thing
-  if(AlfredoConnect.buttonHeld(0, buttonExecute)){
+  if(PestoLink.buttonHeld(buttonExecute)){
     arm.execute();
     shooter.execute();
     justExecuted = true;
   }
-  if(justExecuted && !AlfredoConnect.buttonHeld(0, buttonExecute) && state.getNextAction() > INTAKE){
+  if(justExecuted && !PestoLink.buttonHeld(buttonExecute) && state.getNextAction() > INTAKE){
     state.setNextAction(STOP);
     justExecuted = false;
   }
 
   // enable / disable logic
-  if(AlfredoConnect.buttonHeld(0, buttonEnable)){
-    state.setEnable(true);
+  if(PestoLink.buttonHeld(buttonEnable)){
+    state.setEnable(ENABLE);
   }
-  else if(AlfredoConnect.buttonHeld(0, buttonDisable)){
-    state.setEnable(false);
+  else if(PestoLink.buttonHeld(buttonDisable)){
+    state.setEnable(DISABLE);
   }
 }
 

@@ -6,6 +6,9 @@
 #define TELEOP_MODE false
 #define AUTO_MODE true
 
+#define ENABLE true
+#define DISABLE false
+
 #define STOP 0
 #define INTAKE 1
 #define SUBWOOFER 2
