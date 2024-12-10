@@ -23,5 +23,4 @@ uint8_t DynamicShotController::update()
     float hypotonuse = sqrt( (deltaHeight*deltaHeight) + (currentDistanceToGoal*currentDistanceToGoal) );
 
     currentDesiredArmAngle = 90.0 + atan2(armRadius, hypotonuse) + atan2(deltaHeight, currentDistanceToGoal);
-
 }
