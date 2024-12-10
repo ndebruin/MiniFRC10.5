@@ -50,6 +50,17 @@ void PoseEstimator::supplementPose(Pose *mainPose, Pose addPose){
     mainPose->y += addPose.y;
 }
 
+Pose PoseEstimator::subtractPose(Pose pose1, Pose pose2){
+    Pose newPose;
+    newPose.x = pose1.x - pose2.x;
+    newPose.y = pose1.y - pose2.y;
+    newPose.yaw = pose1.yaw - pose2.yaw;
+}
+
+float PoseEstimator::lengthOfPose(Pose pose){
+    return sqrt((pose.x*pose.x) + (pose.y*pose.y));
+}
+
 bool PoseEstimator::updateFromCoProc()
 {   
     // reset rxDataStruct

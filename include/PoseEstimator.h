@@ -28,9 +28,15 @@ class PoseEstimator
         void zeroYaw(){
             yawOffset = rawYaw;
         }
+        
+        Pose getCurrentGlobalPose() { return currentGlobalPose; }
 
         Pose GlobaltoRobotPose(Pose globalPose);
         Pose RobottoGlobalPose(Pose robotPose);
+
+        Pose subtractPose(Pose Pose1, Pose Pose2);
+
+        float lengthOfPose(Pose pose);
 
     private:
         HardwareSerial *serial;

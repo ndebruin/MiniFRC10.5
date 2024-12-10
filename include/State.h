@@ -12,6 +12,9 @@
 #define NOTE true
 #define NONOTE false
 
+#define BLUE true
+#define RED false
+
 #define STOP 0
 #define INTAKE 1
 #define SUBWOOFER 2

@@ -123,8 +123,30 @@
 #define buttonDisable 15
 
 ////////////////////////////////////////////////////////////////////// Pose Estimator //////////////////////////////////////////////////////////////////////
-#define MOUSE_CONVERSION_FACTOR (1/1000) * 25.4 // 1000 Dots per inch converted to mm
+#define MOUSE_CONVERSION_FACTOR (1/1000) // 1000 Dots per inch
 
 #define baudRate 9600
 #define TXPin 5 // doesn't matter we're not transmitting lmao
 #define RXPin 25
+
+////////////////////////////////////////////////////////////////////// Dynamic Shot Controller //////////////////////////////////////////////////////////////////////
+#define goalHeight 17 // inches
+#define armHeight 4.6 // inches
+
+#define deltaHeight (goalHeight - armHeight)
+
+#define armRadius 2.6125 // inches
+
+// our coordinates are at 0,0 in the corner between the amp and speaker on the blue side
+
+// towards source is x+
+// towards red is y+
+
+#define fieldLength 144.0 // inches
+
+#define goalXRed 24.0
+#define goalYRed fieldLength - 1.57 // offset from far end of the field
+
+#define goalXBlue 24.0
+#define goalYBlue 1.57
+

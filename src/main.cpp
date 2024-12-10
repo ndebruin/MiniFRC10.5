@@ -16,7 +16,7 @@
 #include "State.h"
 #include "PoseEstimator.h"
 #include "PathFollower.h"
-#include "DynamicShooter.h"
+#include "DynamicShotController.h"
 
 #include "Constants.h"
 
@@ -56,7 +56,7 @@ Intake intake = Intake(&intakeMotor, &state);
 
 // PathFollower pathFollower = PathFollower(&drivetrain, &pose, &state);
 
-// DynamicShooter shooterAim = DynamicShooter(&drivetrain, &arm, &shooter, &pose, &state);
+// DynamicShotController shooterAim = DynamicShotController(&drivetrain, &arm, &shooter, &pose, &state);
 
 ////////////////////////////////////////////////////////////////////// Function Declerations //////////////////////////////////////////////////////////////////////
 
