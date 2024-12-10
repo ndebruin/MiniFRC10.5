@@ -37,13 +37,15 @@ NoU_Motor frontRightMotor(frontRightMotorChannel);
 NoU_Motor backLeftMotor(backLeftMotorChannel);
 NoU_Motor backRightMotor(backRightMotorChannel);
 
+NoU_Drivetrain nou_drivetrain(&frontLeftMotor, &frontRightMotor, &backLeftMotor, &backRightMotor);
+
 NoU_Servo armServo(armServoChannel);
 NoU_Motor intakeMotor(intakeMotorChannel);
 NoU_Motor shooterMotor(shooterMotorChannel);
 
 // create our subsystem objects
 
-Drivetrain drivetrain = Drivetrain(&frontLeftMotor, &frontRightMotor, &backLeftMotor, &backRightMotor, &pose, &state);
+Drivetrain drivetrain = Drivetrain(&nou_drivetrain, &pose, &state);
 
 Arm arm = Arm(&armServo, &state); 
 Shooter shooter = Shooter(&shooterMotor, &state);
@@ -78,6 +80,8 @@ void setup()
   // SerialBluetooth.begin(robotName);
   // AlfredoConnect.begin(SerialBluetooth);
 
+  // Serial.begin(9600);
+
   PestoLink.begin(robotName);
 
   // start RSL
@@ -88,7 +92,6 @@ void setup()
   arm.begin();
   shooter.begin();
   intake.begin();
-  pinMode(pinSensor1, INPUT);
 
   // start our pose estimator
   pose.begin();
@@ -104,7 +107,7 @@ void loop()
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  // SerialBluetooth.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
+  // Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
   // SerialBluetooth.println(pose.getYaw());
   // SerialBluetooth.println(state.getNextAction());

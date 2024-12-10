@@ -15,7 +15,7 @@
 class Drivetrain
 {
     public:
-        Drivetrain(NoU_Motor* FrontLeftMotor, NoU_Motor* FrontRightMotor, NoU_Motor* BackLeftMotor, NoU_Motor* BackRightMotor, PoseEstimator* poseEstimator, State* robotState);
+        Drivetrain(NoU_Drivetrain* NoUDrivetrain, PoseEstimator* poseEstimator, State* robotState);
         uint8_t begin();
         uint8_t update();
 
@@ -32,10 +32,7 @@ class Drivetrain
         void stop();
 
     private:
-        NoU_Motor* frontLeftMotor;
-        NoU_Motor* frontRightMotor;
-        NoU_Motor* backLeftMotor;
-        NoU_Motor* backRightMotor;
+        NoU_Drivetrain* nouDrivetrain;
 
         PoseEstimator* pose;
         State* robotState;

@@ -10,6 +10,11 @@
 #define strafeCompensation 0.9  // this helps with the fact that the back wheels are further out and therefore have more torque on the robot
                                 // determined experimentally
 
+#define kV 0.7 // minimum value to overcome friction 
+               // determined experimentally
+
+#define driveExp 1.5 // control "squaring" value to get more control at the low end
+
 // strafe parameters
 #define linX_kS 0.0
 #define linX_kP 0.0
@@ -66,7 +71,9 @@
 
 #define sensor1ValueNote 1000
 
-#define sensor2ValueNote 100
+#define sensor2ValueNote 300
+
+#define debounceTime 100
 
 ////////////////////////////////////////////////////////////////////// Arm //////////////////////////////////////////////////////////////////////
 

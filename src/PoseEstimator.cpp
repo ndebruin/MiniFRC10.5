@@ -52,11 +52,17 @@ void PoseEstimator::supplementPose(Pose *mainPose, Pose addPose){
 
 bool PoseEstimator::updateFromCoProc()
 {   
+    // reset rxDataStruct
+    rxDataStruct.posX = 0;
+    rxDataStruct.posY = 0;
+    rxDataStruct.yaw = 0;
+    
     if(serial->available())
     {
-        rxDataStruct.posX = serial->readStringUntil(',').toInt();
-        rxDataStruct.posY = serial->readStringUntil(',').toInt();
-        rxDataStruct.yaw = serial->readStringUntil('\n').toFloat();
+        serial->readStringUntil('b'); // start of packet
+        rxDataStruct.posX = serial->readStringUntil('x').toInt();
+        rxDataStruct.posY = serial->readStringUntil('y').toInt();
+        rxDataStruct.yaw = serial->readStringUntil('t').toFloat();
         rawYaw = rxDataStruct.yaw;
         return true;
     }

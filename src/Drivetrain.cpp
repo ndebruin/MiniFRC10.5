@@ -2,18 +2,16 @@
 #include <Alfredo_NoU2.h>
 #include "Drivetrain.h"
 
-Drivetrain::Drivetrain(NoU_Motor* FrontLeftMotor, NoU_Motor* FrontRightMotor, NoU_Motor* BackLeftMotor, NoU_Motor* BackRightMotor, PoseEstimator* poseEstimator, State* RobotState)
-                                    : frontLeftMotor(FrontLeftMotor), frontRightMotor(FrontRightMotor), backLeftMotor(BackLeftMotor), backRightMotor(BackRightMotor), pose(poseEstimator), robotState(RobotState)
+Drivetrain::Drivetrain(NoU_Drivetrain* NoUDrivetrain, PoseEstimator* poseEstimator, State* RobotState) : nouDrivetrain(NoUDrivetrain), pose(poseEstimator), robotState(RobotState)
 { }
 
 
 
 uint8_t Drivetrain::begin()
 {
-    frontLeftMotor->setInverted(false);
-    frontRightMotor->setInverted(true);
-    backLeftMotor->setInverted(false);
-    backRightMotor->setInverted(true);
+    // setup intake curve values
+    nouDrivetrain->setMinimumOutput(kV);
+    nouDrivetrain->setInputExponent(driveExp);
 
     return 0;
     
@@ -37,24 +35,25 @@ void Drivetrain::drive(float linearX, float linearY, float angularZ)
     //     linearY = -linearY * sin(pose->getYaw()*DEG_TO_RAD) + linearX* cos(pose->getYaw()*DEG_TO_RAD); // this is also the commonly used field oriented drive equations
     //     linearX = temp;
     // }
-    float frontLeftPower  = linearY + angularZ + linearX;
-    float frontRightPower = linearY - angularZ - linearX;
-    float backLeftPower   = linearY + angularZ - (linearX*strafeCompensation);
-    float backRightPower  = linearY - angularZ + (linearX*strafeCompensation);
-    float maxMagnitude = max(fabs(frontLeftPower), max(fabs(frontRightPower), max(fabs(backLeftPower), fabs(backRightPower))));
-    if (maxMagnitude > 1) 
-    {
-        frontLeftPower /= maxMagnitude;
-        frontRightPower /= maxMagnitude;
-        backLeftPower /= maxMagnitude;
-        backRightPower /= maxMagnitude;
-    }
+    // float frontLeftPower  = linearY + angularZ + linearX;
+    // float frontRightPower = linearY - angularZ - linearX;
+    // float backLeftPower   = linearY + angularZ - (linearX*strafeCompensation);
+    // float backRightPower  = linearY - angularZ + (linearX*strafeCompensation);
+    // float maxMagnitude = max(fabs(frontLeftPower), max(fabs(frontRightPower), max(fabs(backLeftPower), fabs(backRightPower))));
+    // if (maxMagnitude > 1) 
+    // {
+    //     frontLeftPower /= maxMagnitude;
+    //     frontRightPower /= maxMagnitude;
+    //     backLeftPower /= maxMagnitude;
+    //     backRightPower /= maxMagnitude;
+    // }
     if(robotState->isEnabled())
     {
-        frontLeftMotor->set(frontLeftPower);
-        frontRightMotor->set(frontRightPower);
-        backLeftMotor->set(backLeftPower);
-        backRightMotor->set(backRightPower);
+        // frontLeftMotor->set(frontLeftPower);
+        // frontRightMotor->set(frontRightPower);
+        // backLeftMotor->set(backLeftPower);
+        // backRightMotor->set(backRightPower);
+        nouDrivetrain->holonomicDrive(linearX, linearY, angularZ);
     }
 
     return;
@@ -69,10 +68,7 @@ void Drivetrain::drive(float linearX, float linearY, float angularZ, bool fieldO
 }
 
 void Drivetrain::stop(){
-    frontLeftMotor->set(0);
-    frontRightMotor->set(0);
-    backLeftMotor->set(0);
-    backRightMotor->set(0);
+    nouDrivetrain->holonomicDrive(0, 0, 0);
 
     return;
 }
