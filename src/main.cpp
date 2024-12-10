@@ -24,9 +24,9 @@
 
 // BluetoothSerial SerialBluetooth; // bluetooth link
 
-HardwareSerial coProcSerial(1);
-
-PoseEstimator pose(&coProcSerial, baudRate, RXPin, TXPin);
+PoseEstimator pose(&Serial, baudRate); // we're just running the coproc serial over the normal serial bus.
+                                       // this kinda sucks bc it means that we need to disconnect it whenever we program, but oh well
+                                       // can still use Serial.println() for normal computer info tho
 
 State state;
 

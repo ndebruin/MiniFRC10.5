@@ -4,8 +4,16 @@
 PoseEstimator::PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, uint8_t rxPin, uint8_t txPin) : serial(SerialPort), baud(BaudRate), tx(txPin), rx(rxPin)
 { }
 
+PoseEstimator::PoseEstimator(HardwareSerial *SerialPort, uint BaudRate) : serial(SerialPort), baud(BaudRate)
+{ }
+
 uint8_t PoseEstimator::begin(){
-    serial->begin(baudRate, SERIAL_8N1, rx, tx);
+    if(rx != 0 && tx != 0){
+        serial->begin(baudRate, SERIAL_8N1, rx, tx);
+    }
+    else{
+        serial->begin(baudRate, SERIAL_8N1);
+    }  
 
     return 0;
 }

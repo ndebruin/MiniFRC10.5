@@ -17,6 +17,7 @@ class PoseEstimator
 {
     public:
         PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, uint8_t rxPin, uint8_t txPin);
+        PoseEstimator(HardwareSerial *SerialPort, uint BaudRate);
 
         uint8_t begin();
         uint8_t update();
@@ -41,7 +42,7 @@ class PoseEstimator
     private:
         HardwareSerial *serial;
         uint baud;
-        uint8_t tx, rx;
+        uint8_t tx, rx = 0;
 
         CoProcStructRX rxDataStruct;
 
