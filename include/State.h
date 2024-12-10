@@ -9,6 +9,9 @@
 #define ENABLE true
 #define DISABLE false
 
+#define NOTE true
+#define NONOTE false
+
 #define STOP 0
 #define INTAKE 1
 #define SUBWOOFER 2

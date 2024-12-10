@@ -53,6 +53,10 @@ class Intake
         uint16_t rawSensor1;
         uint16_t rawSensor2;
 
+        uint32_t timerValue;
+        bool timerActivated;
+        bool estimatedNote;
+
         double setPower;
 
         // -1 - Custom Speed

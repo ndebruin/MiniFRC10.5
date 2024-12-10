@@ -70,17 +70,35 @@ int8_t Intake::update(){
     rawSensor2 = analogRead(pinSensor2);
 
     if(rawSensor1 > sensor1ValueNote || rawSensor2 > sensor2ValueNote){
-        robotState->setNote(true);
-        digitalWrite(pinFeedbackLED, HIGH);
-        if(intakeMode == INTAKE){ // auto stop
-            robotState->setNextAction(STOP);
+        if(!estimatedNote){
+            estimatedNote = true;
+            timerValue = millis();
+        }
+        if((millis() - timerValue) > debounceTime){
+            if(!robotState->hasNote()){
+                estimatedNote = true;
+                robotState->setNote(NOTE);
+                digitalWrite(pinFeedbackLED, HIGH);
+                if(intakeMode == INTAKE){ // auto stop
+                    robotState->setNextAction(STOP);
+                }
+            } 
         }
     }
     else{
-        robotState->setNote(false);
-        digitalWrite(pinFeedbackLED, LOW);
-        if(intakeMode == SOURCE){ // auto stop source
-            robotState->setNextAction(STOP);
+        if(estimatedNote){
+            estimatedNote = false;
+            timerValue = millis();
+        }
+        if((millis() - timerValue) > debounceTime){
+            if(robotState->hasNote()){
+                estimatedNote = false;
+                robotState->setNote(NONOTE);
+                digitalWrite(pinFeedbackLED, LOW);
+                if(intakeMode == SOURCE){ // auto stop
+                    robotState->setNextAction(STOP);
+                }
+            } 
         }
     }
 
