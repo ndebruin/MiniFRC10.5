@@ -63,6 +63,8 @@ Pose PoseEstimator::subtractPose(Pose pose1, Pose pose2){
     newPose.x = pose1.x - pose2.x;
     newPose.y = pose1.y - pose2.y;
     newPose.yaw = pose1.yaw - pose2.yaw;
+
+    return newPose;
 }
 
 float PoseEstimator::lengthOfPose(Pose pose){

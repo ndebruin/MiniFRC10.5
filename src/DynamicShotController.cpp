@@ -8,6 +8,7 @@ DynamicShotController::DynamicShotController(Drivetrain* Drivetrain, Arm* Arm, S
 uint8_t DynamicShotController::begin()
 {
 
+    return 0;
 }
 
 uint8_t DynamicShotController::update()
@@ -23,4 +24,7 @@ uint8_t DynamicShotController::update()
     float hypotonuse = sqrt( (deltaHeight*deltaHeight) + (currentDistanceToGoal*currentDistanceToGoal) );
 
     currentDesiredArmAngle = 90.0 + atan2(armRadius, hypotonuse) + atan2(deltaHeight, currentDistanceToGoal);
+
+
+    return 0;
 }

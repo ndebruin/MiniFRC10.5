@@ -69,11 +69,11 @@
 #define pinSensor1 35
 #define pinSensor2 34
 
-#define sensor1ValueNote 1000
+#define sensor1ValueNote 1100
 
-#define sensor2ValueNote 300
+#define sensor2ValueNote 1200
 
-#define debounceTime 50
+#define debounceTime 1
 
 ////////////////////////////////////////////////////////////////////// Arm //////////////////////////////////////////////////////////////////////
 
@@ -90,7 +90,7 @@
 
 #define arm_SOURCE_angle 90
 
-#define arm_CLIMB_DEPLOY_angle 190
+#define arm_CLIMB_DEPLOY_angle 182
 #define arm_CLIMB_RETRACT_angle 40
 
 ////////////////////////////////////////////////////////////////////// Controller //////////////////////////////////////////////////////////////////////

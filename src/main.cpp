@@ -56,7 +56,7 @@ Intake intake = Intake(&intakeMotor, &state);
 
 // PathFollower pathFollower = PathFollower(&drivetrain, &pose, &state);
 
-// DynamicShotController shooterAim = DynamicShotController(&drivetrain, &arm, &shooter, &pose, &state);
+DynamicShotController shooterAim = DynamicShotController(&drivetrain, &arm, &shooter, &pose, &state);
 
 ////////////////////////////////////////////////////////////////////// Function Declerations //////////////////////////////////////////////////////////////////////
 
@@ -82,6 +82,9 @@ void setup()
 
   // Serial.begin(9600);
 
+  frontRightMotor.setInverted(true);
+  backRightMotor.setInverted(true);
+
   PestoLink.begin(robotName);
 
   // start RSL
@@ -98,7 +101,7 @@ void setup()
   
   // start advanced controllers
   // pathFollower.begin();
-  // shooterAim.begin();
+  shooterAim.begin();
 }
 
 ////////////////////////////////////////////////////////////////////// loop() //////////////////////////////////////////////////////////////////////
@@ -107,7 +110,7 @@ void loop()
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  // Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
+  Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
   // SerialBluetooth.println(pose.getYaw());
   // SerialBluetooth.println(state.getNextAction());
@@ -143,8 +146,8 @@ void asyncUpdate(){
   pose.update();
 
   // let advanced controllers update
-  // shooterAim.update();
   // pathFollower.update();
+  // shooterAim.update();
 
   // update from driver station
   if(!PestoLink.update()){
@@ -172,7 +175,7 @@ double deadzone(double rawJoy){
 void runDrivetrain(){
   float linearX = deadzone(PestoLink.getAxis(axisLinX));
   float linearY = -deadzone(PestoLink.getAxis(axisLinY));
-  float angularZ = deadzone(PestoLink.getAxis(axisAngZ)) * 0.8;
+  float angularZ = deadzone(PestoLink.getAxis(axisAngZ)) * 0.5;
   
   drivetrain.drive(linearX, linearY, angularZ);
 
