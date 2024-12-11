@@ -23,9 +23,11 @@ uint8_t PoseEstimator::update(){
     if(updateFromCoProc()){
         rawYaw = rxDataStruct.yaw;
         Pose newRobotPoseData;
-        newRobotPoseData.x = rxDataStruct.posX * MOUSE_CONVERSION_FACTOR;
+        // Serial.println(String(rxDataStruct.posX) + "x" + String(rxDataStruct.posY) + "y" + String(rxDataStruct.yaw) + "t");
+        newRobotPoseData.x = -rxDataStruct.posX * MOUSE_CONVERSION_FACTOR;
         newRobotPoseData.y = rxDataStruct.posY * MOUSE_CONVERSION_FACTOR;
-        newRobotPoseData.yaw = rxDataStruct.yaw;
+        newRobotPoseData.yaw = rxDataStruct.yaw - yawOffset;
+        // Serial.println(String(newRobotPoseData.x) + "x" + String(newRobotPoseData.y) + "y" + String(newRobotPoseData.yaw) + "t");
         supplementPose(&currentGlobalPose, RobottoGlobalPose(newRobotPoseData));
         return 1; // got an update
     }
@@ -35,9 +37,11 @@ uint8_t PoseEstimator::update(){
 Pose PoseEstimator::RobottoGlobalPose(Pose robotPose){
     Pose globalPose;
 
-    globalPose.yaw = robotPose.yaw - yawOffset;
-    globalPose.x = robotPose.x * cos(robotPose.yaw) + -robotPose.y * sin(robotPose.yaw); // this is the systems of equations form of a 2x2 rotation matrix
-    globalPose.y = robotPose.x * sin(robotPose.yaw) + robotPose.y * cos(robotPose.yaw); // this is also the transpose (which is equivalent to the inverse in this case) of the commonly used field oriented drive equations
+    globalPose.yaw = robotPose.yaw;
+    // trig functions use radians not degress smh
+    float transformYaw = robotPose.yaw *DEG_TO_RAD;
+    globalPose.x = robotPose.x * cos(transformYaw) + robotPose.y * sin(transformYaw); // this is the systems of equations form of a 2x2 rotation matrix
+    globalPose.y = -robotPose.x * sin(transformYaw) + robotPose.y * cos(transformYaw); // this is also the transpose (which is equivalent to the inverse in this case) of the commonly used field oriented drive equations
 
     return globalPose;
 }
@@ -46,8 +50,10 @@ Pose PoseEstimator::GlobaltoRobotPose(Pose globalPose){
     Pose robotPose;
 
     robotPose.yaw = globalPose.yaw;
-    robotPose.x = globalPose.x * cos(globalPose.yaw) + globalPose.y * sin(globalPose.yaw); // this is the systems of equations form of a 2x2 rotation matrix
-    robotPose.y = -globalPose.x * sin(globalPose.yaw) + globalPose.y * cos(globalPose.yaw); // this is also the commonly used field oriented drive equations
+    // trig functions use radians not degress smh
+    float transformYaw = globalPose.yaw *DEG_TO_RAD;
+    robotPose.x = globalPose.x * cos(transformYaw) + -globalPose.y * sin(transformYaw); // this is the systems of equations form of a 2x2 rotation matrix
+    robotPose.y = globalPose.x * sin(transformYaw) + globalPose.y * cos(transformYaw); // this is also the commonly used field oriented drive equations
 
     return robotPose;
 }

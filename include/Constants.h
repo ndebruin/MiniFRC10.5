@@ -1,3 +1,6 @@
+#ifndef CONSTANT_h
+#define CONSTANT_h
+
 #define robotName "Team 43"
 
 ////////////////////////////////////////////////////////////////////// Drivetrain //////////////////////////////////////////////////////////////////////
@@ -123,9 +126,9 @@
 #define buttonDisable 15
 
 ////////////////////////////////////////////////////////////////////// Pose Estimator //////////////////////////////////////////////////////////////////////
-#define MOUSE_CONVERSION_FACTOR (1/1000) // 1000 Dots per inch
+constexpr float MOUSE_CONVERSION_FACTOR = (1.0/1000.0); // 1000 Dots per inch
 
-#define baudRate 9600
+#define baudRate 115200
 #define TXPin 5 // doesn't matter we're not transmitting lmao
 #define RXPin 25
 
@@ -133,7 +136,7 @@
 #define goalHeight 17 // inches
 #define armHeight 4.6 // inches
 
-#define deltaHeight (goalHeight - armHeight)
+constexpr float deltaHeight = (goalHeight - armHeight);
 
 #define armRadius 2.6125 // inches
 
@@ -145,8 +148,9 @@
 #define fieldLength 144.0 // inches
 
 #define goalXRed 24.0
-#define goalYRed fieldLength - 1.57 // offset from far end of the field
+constexpr float goalYRed = (fieldLength - 1.57);  // offset from far end of the field
 
 #define goalXBlue 24.0
 #define goalYBlue 1.57
 
+#endif //CONSTANT_h
