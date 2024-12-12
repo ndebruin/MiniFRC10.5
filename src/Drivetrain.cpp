@@ -28,13 +28,12 @@ uint8_t Drivetrain::update(){
 
 void Drivetrain::drive(float linearX, float linearY, float angularZ)
 {
-    // if(fieldOriented)
-    // {
-            
-    //     float temp =  linearY* cos(pose->getYaw()*DEG_TO_RAD) + linearX* sin(pose->getYaw()*DEG_TO_RAD); // this is the systems of equations form of a 2x2 rotation matrix
-    //     linearY = -linearY * sin(pose->getYaw()*DEG_TO_RAD) + linearX* cos(pose->getYaw()*DEG_TO_RAD); // this is also the commonly used field oriented drive equations
-    //     linearX = temp;
-    // }
+    if(fieldOriented)
+    {
+        float temp = linearX* cos(pose->getYaw()*DEG_TO_RAD) + -linearY* sin(pose->getYaw()*DEG_TO_RAD); // this is the systems of equations form of a 2x2 rotation matrix
+        linearY = linearX * sin(pose->getYaw()*DEG_TO_RAD) + linearY* cos(pose->getYaw()*DEG_TO_RAD); // this is also the commonly used field oriented drive equations
+        linearX = temp;
+    }
     // float frontLeftPower  = linearY + angularZ + linearX;
     // float frontRightPower = linearY - angularZ - linearX;
     // float backLeftPower   = linearY + angularZ - (linearX*strafeCompensation);

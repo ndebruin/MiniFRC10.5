@@ -110,9 +110,9 @@ void loop()
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  // Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
+  Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
-  Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
+  // Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
   // SerialBluetooth.println(state.getNextAction());
 
   if(state.RobotMode() == TELEOP_MODE){ // if in teleop
@@ -121,15 +121,23 @@ void loop()
     // handle state machine decisions    
     runStateSelector();
 
-    if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
-      pose.zeroYaw();
-    }
-    if(PestoLink.buttonHeld(buttonEnableFieldOriented)){ // enable / disable field oriented driving
+    // enable / disable field oriented driving
+    if(PestoLink.buttonHeld(buttonEnableFieldOriented)){ 
       drivetrain.setDriveMode(FIELD_ORIENTED);
     }
     else if(PestoLink.buttonHeld(buttonDisableFieldOriented)){
       drivetrain.setDriveMode(ROBOT_ORIENTED);
     }
+  }
+  if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
+    pose.zeroYaw();
+  }
+  // enable / disable logic
+  if(PestoLink.buttonHeld(buttonEnable)){
+    state.setEnable(ENABLE);
+  }
+  else if(PestoLink.buttonHeld(buttonDisable)){
+    state.setEnable(DISABLE);
   }
 }
 
@@ -226,8 +234,6 @@ void runStateSelector(){
     intake.execute();
   }
 
-
-
   // actually have the execute button do it's thing
   if(PestoLink.buttonHeld(buttonExecute)){
     arm.execute();
@@ -237,14 +243,6 @@ void runStateSelector(){
   if(justExecuted && !PestoLink.buttonHeld(buttonExecute) && state.getNextAction() > INTAKE){
     state.setNextAction(STOP);
     justExecuted = false;
-  }
-
-  // enable / disable logic
-  if(PestoLink.buttonHeld(buttonEnable)){
-    state.setEnable(ENABLE);
-  }
-  else if(PestoLink.buttonHeld(buttonDisable)){
-    state.setEnable(DISABLE);
   }
 }
 

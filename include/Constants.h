@@ -72,11 +72,11 @@
 #define pinSensor1 35
 #define pinSensor2 34
 
-#define sensor1ValueNote 1100
+#define sensor1ValueNote 950
 
-#define sensor2ValueNote 1200
+#define sensor2ValueNote 300
 
-#define debounceTime 1
+#define debounceTime 5
 
 ////////////////////////////////////////////////////////////////////// Arm //////////////////////////////////////////////////////////////////////
 
@@ -84,7 +84,7 @@
 
 #define arm_STOW_angle 22
 
-#define arm_SUB_angle 67
+#define arm_SUB_angle 73
 
 #define arm_AMP_FORWARD_angle 180
 #define arm_AMP_BACKWARD_angle 210
