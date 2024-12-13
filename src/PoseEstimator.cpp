@@ -26,7 +26,7 @@ uint8_t PoseEstimator::begin(){
 uint8_t PoseEstimator::update(){
     // update data from the coproc
     if(updateFromCoProc()){
-        rawYaw = rxDataStruct.yaw;
+        rawYaw = rxDataStruct.yaw + 180.0; // offset so we get 0->360 rather than -180->180
         Pose newRobotPoseData;
         // Serial.println(String(rxDataStruct.posX) + "x" + String(rxDataStruct.posY) + "y" + String(rxDataStruct.yaw) + "t");
         newRobotPoseData.x = -rxDataStruct.posX * MOUSE_CONVERSION_FACTOR;

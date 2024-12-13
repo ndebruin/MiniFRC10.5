@@ -67,6 +67,8 @@ double deadzone(double raw);
 void runDrivetrain();
 void runStateSelector(); // shot presets, climber, and intake
 
+char* updatePestoLink();
+
 ////////////////////////////////////////////////////////////////////// Global Variables //////////////////////////////////////////////////////////////////////
 
 bool justExecuted = false;
@@ -173,8 +175,40 @@ void asyncUpdate(){
     RSL::setState(RSL_OFF);
   }
 
-  // update pestolink telem object
-  
+  // update pestolink telem
+  if(state.isEnabled()){
+    PestoLink.print(updatePestoLink(), "00FF00");
+  }
+  else{
+    PestoLink.print(updatePestoLink(), "FF0000");
+  }
+}
+
+char* updatePestoLink(){
+  String telemString;
+
+  if(state.getAlliance() == RED){
+    telemString.concat('R ');
+  }
+  else{
+    telemString.concat('B ');
+  } // 2/8 characters
+  telemString.concat(state.getNextAction());
+  telemString.concat(' '); // 4/8 characters
+  telemString.concat(String(pose.getYaw()));
+
+  if(state.isDynamic() == DYNAMIC){
+    telemString.concat('D');
+  }
+  else{
+    telemString.concat('P');
+  } // 5/8 characters
+
+  char* telem = (char*)telemString.c_str();
+  dtostrf(pose.getYaw(), 3, 0, telem);  // 3 width, 0 decimal points
+  // 8/8 characters
+
+  return telem;
 }
 
 double deadzone(double rawJoy){
