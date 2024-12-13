@@ -13,17 +13,68 @@ uint8_t DynamicShotController::begin()
 
 uint8_t DynamicShotController::update()
 {
-    float currentDistanceToGoal;
-    if(robotState->getAlliance() == BLUE){
-        currentDistanceToGoal = pose->lengthOfPose(pose->subtractPose(pose->getCurrentGlobalPose(), blueSpeaker));
-    }
-    else if(robotState->getAlliance() == RED){
-        currentDistanceToGoal = pose->lengthOfPose(pose->subtractPose(pose->getCurrentGlobalPose(), redSpeaker));
-    }
     
+    if(robotState->isDynamic()){ // while we have x/y data for each target, we are not going to use that to auto drive to the point (YET)
+        if(robotState->getAlliance() == BLUE){
+            switch(robotState->getNextAction()){
+                case SUBWOOFER:
+                    currentTargetType = SPEAKER;
+                    currentTarget = SpeakerBlue;
+                    break;
+                case AMP_FORWARD:
+                    currentTargetType = AMP;
+                    currentTarget = AmpBlue;
+                    break;
+                case AMP_BACKWARD:
+                    currentTargetType = AMP;
+                    currentTarget = AmpBlue;
+                    currentTarget.yaw -= 180.0; // flip around given we score reverse
+                    break;
+                case PASS:
+                    currentTargetType = WING;
+                    currentTarget = PassBlue;
+                    break;
+                default:
+                    currentTargetType = NOTARGET;
+                    currentTarget = Pose();
+                    break;
+            }
+        }
+        else if (robotState->getAlliance() == RED){
+            switch(robotState->getNextAction()){
+                case SUBWOOFER:
+                    currentTargetType = SPEAKER;
+                    currentTarget = SpeakerRed;
+                    break;
+                case AMP_FORWARD:
+                    currentTargetType = AMP;
+                    currentTarget = AmpRed;
+                    break;
+                case AMP_BACKWARD:
+                    currentTargetType = AMP;
+                    currentTarget = AmpRed;
+                    currentTarget.yaw -= 180.0; // flip around given we score reverse
+                    break;
+                case PASS:
+                    currentTargetType = WING;
+                    currentTarget = PassRed;
+                    break;
+                default:
+                    currentTargetType = NOTARGET;
+                    currentTarget = Pose();
+                    break;
+            }
+        }
+    }
+
+    float currentDistanceToGoal;
+
+
     float hypotonuse = sqrt( (deltaHeight*deltaHeight) + (currentDistanceToGoal*currentDistanceToGoal) );
 
     currentDesiredArmAngle = 90.0 + atan2(armRadius, hypotonuse) + atan2(deltaHeight, currentDistanceToGoal);
+
+    // currentDesiredTheta = atan2();
 
 
     return 0;

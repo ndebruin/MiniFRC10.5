@@ -21,10 +21,12 @@
 #define AMP_FORWARD 3
 #define AMP_BACKWARD 4
 #define PASS 5
-#define DYNAMIC 6
 #define SOURCE 7
 #define CLIMBERS_UP 8
 #define CLIMBERS_DOWN 9
+
+#define DYNAMIC true
+#define PRESET false
 
 #include "Constants.h"
 
@@ -45,6 +47,8 @@ class State
             return enabled;
         }
 
+        bool isDynamic(){ return dynamic; }
+
         // true if has note
         void setNote(bool hasNote){
             note = hasNote;
@@ -57,6 +61,10 @@ class State
 
         void setEnable(bool Enabled){
             enabled = Enabled;
+        }
+
+        void setDynamicTargetting (bool Dynamic){
+            dynamic = dynamic;
         }
 
         // 0 - Stop/Stow
@@ -105,6 +113,8 @@ class State
         bool note = false;
         bool blue;
 
+
+
         bool robotMode = false;
 
         // 0 - Stop/Stow
@@ -113,11 +123,11 @@ class State
         // 3 - Amp Forward
         // 4 - Amp Backward
         // 5 - Pass
-        // 6 - Dynamic Shot
         // 7 - Source Intake
         // 8 - Climbers Up
         // 9 - Climbers Down
-        uint8_t nextAction;        
+        uint8_t nextAction;
+        bool dynamic;
 };
 
 #endif

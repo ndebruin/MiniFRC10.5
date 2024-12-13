@@ -138,19 +138,4 @@ constexpr float deltaHeight = (goalHeight - armHeight);
 
 #define armRadius 2.6125 // inches
 
-// our coordinates are at 0,0 in the corner between the amp and speaker on the blue side
-
-// towards source is x+
-// towards red is y+
-
-#define fieldLength 144.0 // inches
-#define fieldWidth 70.880 // inches
-
-// THESE NEED TO BE REDEFINED ONCE I WORK OUT A PROPER COORDINATE SYSTEM
-#define goalXRed 24.0
-constexpr float goalYRed = (fieldLength - 1.57);  // offset from far end of the field
-
-#define goalXBlue 24.0
-#define goalYBlue 1.57
-
 #endif //CONSTANT_h

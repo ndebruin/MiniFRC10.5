@@ -10,6 +10,12 @@
 #include "Drivetrain.h"
 #include "Shooter.h"
 #include "PoseEstimator.h"
+#include "FieldDims.h"
+
+#define NOTARGET 0
+#define SPEAKER 1
+#define AMP 2
+#define WING 3
 
 class DynamicShotController
 {
@@ -26,11 +32,12 @@ class DynamicShotController
         PoseEstimator* pose;
         State* robotState;
 
-        float currentDesiredArmAngle;
+        Pose currentTarget;
 
-        Pose blueSpeaker = {goalXBlue, goalYBlue, 180.0};
-        Pose redSpeaker = {goalXRed, goalYRed, 0.0};
-        
+        float currentDesiredArmAngle;
+        float currentDesiredTheta;
+
+        uint8_t currentTargetType;
  
 };
 
