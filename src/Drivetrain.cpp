@@ -5,25 +5,80 @@
 Drivetrain::Drivetrain(NoU_Drivetrain* NoUDrivetrain, PoseEstimator* poseEstimator, State* RobotState) : nouDrivetrain(NoUDrivetrain), pose(poseEstimator), robotState(RobotState)
 { }
 
-
-
 uint8_t Drivetrain::begin()
 {
     // setup intake curve values
-    nouDrivetrain->setMinimumOutput(kV);
+    nouDrivetrain->setMinimumOutput(kS);
     nouDrivetrain->setInputExponent(driveExp);
 
     return 0;
     
 }
 
-uint8_t Drivetrain::update(){
+uint8_t Drivetrain::update()
+{
     // safety measure
     if(!robotState->isEnabled()){
         stop();
     }
 
+    if(cancelWhenInRange && // if we want to cancel when within range and are within range on all 3 axes
+        fabs(thetaError) < theta_AcceptableError &&
+        fabs(xError) < x_AcceptableError &&
+        fabs(yError) < y_AcceptableError)
+        {
+            driveMode = FULL_TELEOP;
+            stop();
+    }
+
+    if(driveMode == THETA_ONLY){
+        thetaError = (desiredTheta - pose->getCurrentGlobalPose().yaw);
+
+        // suck it we're writing our own feedforward + P controller
+        angularZCommand = angZ_kS + (thetaError * angZ_kP);
+    }
+
+    if(driveMode == FULL_AUTO){
+        xError = (desiredX - pose->getCurrentGlobalPose().x);
+        yError = (desiredY - pose->getCurrentGlobalPose().y);
+        thetaError = (desiredTheta - pose->getCurrentGlobalPose().yaw);
+
+        // suck it we're writing our own feedforward + P controller
+        linearXCommand = linX_kS + (xError * linX_kP);
+        linearYCommand = linY_kS + (yError * linY_kP);
+        angularZCommand = angZ_kS + (thetaError * angZ_kP);
+
+        // just to be safe
+        setFieldOriented(FIELD_ORIENTED);
+        
+        // if we're enabled, use the control values
+        if(robotState->isEnabled()){
+            drive(linearXCommand, linearYCommand, angularZCommand); // drive with our commands
+        }
+        
+    }
+
     return 0;
+}
+
+void Drivetrain::teleopDrive(float linearX, float linearY, float angularZ)
+{
+    if(driveMode == FULL_AUTO){ // something has gone wrong (for now, this may change if we do drive-to-goal in the future)
+        driveMode = FULL_TELEOP;
+    }
+    else if(driveMode == THETA_ONLY && angularZ != 0.0){ // there is manual heading data coming in, revert to manual control
+        driveMode = FULL_TELEOP;
+    }
+    else if(driveMode == THETA_ONLY && angularZ == 0.0){
+        // if the robot is doing heading control and there's no input from the driver
+        // we want to use the command control value, not the drivers
+        drive(linearX, linearY, angularZCommand); 
+    }
+
+    // normal mode
+    if(driveMode == FULL_TELEOP){
+        drive(linearX, linearY, angularZ);
+    }
 }
 
 void Drivetrain::drive(float linearX, float linearY, float angularZ)
@@ -70,4 +125,21 @@ void Drivetrain::stop(){
     nouDrivetrain->holonomicDrive(0, 0, 0);
 
     return;
+}
+
+void Drivetrain::setPose(Pose pose){
+    desiredX = pose.x;
+    desiredY = pose.y;
+    desiredTheta = pose.yaw;
+    driveMode = FULL_AUTO;
+    setFieldOriented(FIELD_ORIENTED); 
+    // we actually want field oriented b.c. we're doing our path following in the inertial frame
+    // therefore field oriented actually controls how we would like.
+    cancelWhenInRange = true;
+}
+
+void Drivetrain::setTheta(float theta){
+    desiredTheta = theta;
+    driveMode = THETA_ONLY;
+    cancelWhenInRange = false; // if we're doing heading control, we want to do it constantly
 }

@@ -12,6 +12,10 @@
 #define FIELD_ORIENTED true
 #define ROBOT_ORIENTED false
 
+#define FULL_TELEOP 0
+#define THETA_ONLY 1
+#define FULL_AUTO 2
+
 class Drivetrain
 {
     public:
@@ -23,6 +27,8 @@ class Drivetrain
 
         void setFieldOriented(bool FieldOriented){ fieldOriented = FieldOriented; }
 
+        void teleopDrive(float linearX, float linearY, float angularZ);
+
         // will either be field oriented or not depending on the seperately set field (setFieldOriented(bool))
         void drive(float linearX, float linearY, float angularZ);
 
@@ -31,10 +37,8 @@ class Drivetrain
 
         void stop();
 
-
-        void setX(float X){ desiredX = X; }
-        void setY(float Y){ desiredY = Y; }
-        void setTheta(float theta){ desiredTheta = theta; }
+        void setPose(Pose pose);
+        void setTheta(float theta);
 
     private:
         NoU_Drivetrain* nouDrivetrain;
@@ -44,9 +48,16 @@ class Drivetrain
 
         bool fieldOriented = false;
 
-        float desiredX;
-        float desiredY;
-        float desiredTheta;
+        // 0 - full teleop
+        // 1 - auto theta only
+        // 2 - full auto
+        uint8_t driveMode;
+
+        float desiredX, xError, linearXCommand;
+        float desiredY, yError, linearYCommand;
+        float desiredTheta, thetaError, angularZCommand;
+
+        bool cancelWhenInRange;
  
 };
 

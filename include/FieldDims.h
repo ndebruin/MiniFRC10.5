@@ -15,6 +15,23 @@
 // theta = 180 - pointing at blue alliance wall
 // theta = 270 - pointing at amp wall
 
+
+// starting positions
+
+// constexpr Pose centerSubBlue = 
+// {
+//     24.0,
+//     , // DEFINE THIS
+//     180.0
+// };
+
+// constexpr Pose centerSubRed = 
+// {
+//     24.0,
+//     , // DEFINE THIS
+//     180.0
+// };
+
 // blue scoring targets
 constexpr Pose SpeakerBlue = 
 {

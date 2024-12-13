@@ -13,7 +13,7 @@
 #define strafeCompensation 0.9  // this helps with the fact that the back wheels are further out and therefore have more torque on the robot
                                 // determined experimentally
 
-#define kV 0.7 // minimum value to overcome friction 
+#define kS 0.7 // minimum value to overcome friction 
                // determined experimentally
 
 #define driveExp 1.5 // control "squaring" value to get more control at the low end
@@ -24,7 +24,7 @@
 #define linX_kI 0.0
 #define linX_kD 0.0
 
-#define x_AcceptableError 0.0
+#define x_AcceptableError 0.5 // inches
 
 // forward back parameters
 #define linY_kS 0.0
@@ -32,7 +32,7 @@
 #define linY_kI 0.0
 #define linY_kD 0.0
 
-#define y_AcceptableError 0.0
+#define y_AcceptableError 0.5 // inches
 
 // turn parameters
 #define angZ_kS 0.0
@@ -40,7 +40,7 @@
 #define angZ_kI 0.0
 #define angZ_kD 0.0
 
-#define theta_AcceptableError 0.0
+#define theta_AcceptableError 1.0 // degrees
 
 ////////////////////////////////////////////////////////////////////// Shooter //////////////////////////////////////////////////////////////////////
 
