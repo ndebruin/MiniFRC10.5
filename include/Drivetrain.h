@@ -19,9 +19,9 @@ class Drivetrain
         uint8_t begin();
         uint8_t update();
 
-        bool getDriveMode(){ return fieldOriented; }
+        bool getFieldOriented(){ return fieldOriented; }
 
-        void setDriveMode(bool driveMode){ fieldOriented = driveMode; }
+        void setFieldOriented(bool FieldOriented){ fieldOriented = FieldOriented; }
 
         // will either be field oriented or not depending on the seperately set field (setFieldOriented(bool))
         void drive(float linearX, float linearY, float angularZ);
@@ -31,6 +31,11 @@ class Drivetrain
 
         void stop();
 
+
+        void setX(float X){ desiredX = X; }
+        void setY(float Y){ desiredY = Y; }
+        void setTheta(float theta){ desiredTheta = theta; }
+
     private:
         NoU_Drivetrain* nouDrivetrain;
 
@@ -38,6 +43,10 @@ class Drivetrain
         State* robotState;
 
         bool fieldOriented = false;
+
+        float desiredX;
+        float desiredY;
+        float desiredTheta;
  
 };
 

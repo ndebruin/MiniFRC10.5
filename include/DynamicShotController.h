@@ -25,6 +25,10 @@ class DynamicShotController
         uint8_t begin();
         uint8_t update();
 
+        void execute();
+
+        float getCurrentDesiredTheta(){ return currentDesiredTheta; }
+
     private:
         Drivetrain* drivetrain;
         Arm* arm;

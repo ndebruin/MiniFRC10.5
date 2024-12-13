@@ -7,8 +7,13 @@
 #define fieldWidth 70.880 // inches
 
 // x+ is towards source from amp wall
+// y+ is towards the red alliance wall
 
-
+// theta is CW+ from the PoV of being on the blue alliance with 0 being pointing at the red alliance wall
+// theta = 0 - pointing at red alliance wall
+// theta = 90 - pointing at source wall
+// theta = 180 - pointing at blue alliance wall
+// theta = 270 - pointing at amp wall
 
 // blue scoring targets
 constexpr Pose SpeakerBlue = 

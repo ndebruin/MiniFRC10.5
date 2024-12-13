@@ -34,7 +34,7 @@ class Arm
             armSetAngle = angle;
         }
 
-        void setDynamic(double angle);
+        void setDynamic(float angle);
 
 
     private:

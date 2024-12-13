@@ -40,10 +40,6 @@ int8_t Shooter::update(){
             shooterMode = 5;
             setPower = Shooter_PASS_kS;
             break;
-        case DYNAMIC:
-            shooterMode = 6;
-            setPower = Shooter_DYNAMIC_kS;
-            break;
         case SOURCE:
             shooterMode = 7;
             setPower = Shooter_SOURCE_kS; // we want mechanisms to automatically go to the position to intake when the intake button is pressed, not when execute is pressed

@@ -39,10 +39,6 @@ int8_t Arm::update(){
             armMode = 5;
             armSetAngle = arm_PASS_angle;
             break;
-        case DYNAMIC:
-            armMode = 6;
-            // this one is weird, we'll see
-            break;
         case SOURCE:
             armMode = 7;
             armSetAngle = arm_SOURCE_angle;
@@ -74,5 +70,11 @@ void Arm::execute(){
 void Arm::home(){
     armMode = 0;
     armSetAngle = arm_STOW_angle;
+    execute();
+}
+
+void Arm::setDynamic(float angle){
+    armMode = 6; // dynamic mode
+    armSetAngle = angle;
     execute();
 }

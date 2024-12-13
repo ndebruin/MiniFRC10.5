@@ -123,15 +123,16 @@ void loop()
 
     // enable / disable field oriented driving
     if(PestoLink.buttonHeld(buttonEnableFieldOriented)){ 
-      drivetrain.setDriveMode(FIELD_ORIENTED);
+      drivetrain.setFieldOriented(FIELD_ORIENTED);
     }
     else if(PestoLink.buttonHeld(buttonDisableFieldOriented)){
-      drivetrain.setDriveMode(ROBOT_ORIENTED);
+      drivetrain.setFieldOriented(ROBOT_ORIENTED);
     }
   }
   if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
     pose.zeroYaw();
   }
+
   // enable / disable logic
   if(PestoLink.buttonHeld(buttonEnable)){
     state.setEnable(ENABLE);
@@ -171,6 +172,9 @@ void asyncUpdate(){
   else if(!state.isEnabled()){
     RSL::setState(RSL_OFF);
   }
+
+  // update pestolink telem object
+  
 }
 
 double deadzone(double rawJoy){
@@ -218,9 +222,6 @@ void runStateSelector(){
   else if(PestoLink.buttonHeld(buttonAmpBackward)){
     state.setNextAction(AMP_BACKWARD);
   }
-  else if(PestoLink.buttonHeld(buttonDynamic)){
-    state.setNextAction(DYNAMIC);
-  }
   else if(PestoLink.buttonHeld(buttonClimbUp)){
     state.setNextAction(CLIMBERS_UP);
   }
@@ -228,17 +229,27 @@ void runStateSelector(){
     state.setNextAction(CLIMBERS_DOWN);
   }
 
+  if(PestoLink.buttonHeld(buttonDynamicEnable)){
+    state.setDynamicTargeting(DYNAMIC);
+  }
+  else if(PestoLink.buttonHeld(buttonDynamicDisable)){
+    state.setDynamicTargeting(PRESET);
+  }
+
   // we only want to do this if we're currently in another state
   // (as in, if we are trying to shoot)
-  if(PestoLink.buttonHeld(buttonIntake) && state.getNextAction() > INTAKE){ 
+  if(PestoLink.buttonHeld(buttonIntake) && (state.getNextAction() > INTAKE && state.getNextAction() != SOURCE)){ 
     intake.execute();
   }
 
   // actually have the execute button do it's thing
-  if(PestoLink.buttonHeld(buttonExecute)){
+  if(PestoLink.buttonHeld(buttonExecute) && (state.isDynamic() == PRESET)){
     arm.execute();
     shooter.execute();
     justExecuted = true;
+  }
+  else if(PestoLink.buttonHeld(buttonExecute) && (state.isDynamic() == DYNAMIC)){
+    shooterAim.execute();
   }
   if(justExecuted && !PestoLink.buttonHeld(buttonExecute) && state.getNextAction() > INTAKE){
     state.setNextAction(STOP);

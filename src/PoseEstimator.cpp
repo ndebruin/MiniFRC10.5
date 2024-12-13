@@ -82,6 +82,10 @@ float PoseEstimator::lengthOfPose(Pose pose){
     return sqrt((pose.x*pose.x) + (pose.y*pose.y));
 }
 
+float PoseEstimator::thetaOfPose(Pose pose){
+    return atan2(pose.y, pose.x);
+}
+
 bool PoseEstimator::updateFromCoProc()
 {   
     // reset rxDataStruct

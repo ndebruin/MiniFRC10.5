@@ -39,6 +39,8 @@ class PoseEstimator
 
         float lengthOfPose(Pose pose);
 
+        float thetaOfPose(Pose pose);
+
     private:
         HardwareSerial *serial;
         uint baud;

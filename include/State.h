@@ -63,7 +63,7 @@ class State
             enabled = Enabled;
         }
 
-        void setDynamicTargetting (bool Dynamic){
+        void setDynamicTargeting (bool Dynamic){
             dynamic = dynamic;
         }
 

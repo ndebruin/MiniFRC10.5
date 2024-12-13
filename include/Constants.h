@@ -104,29 +104,33 @@
 #define axisLinX 0
 #define axisAngZ 2
 
-#define buttonIntake 6
-#define buttonExecute 7
+#define buttonIntake 6 // left trigger
+#define buttonExecute 7 // right trigger
 
-#define buttonSource 4
+#define buttonSource 4 // left bumper
 
-#define buttonAmpForward 2
+#define buttonAmpForward 2 // abxy buttons
 #define buttonPass 1
 #define buttonSub 0
 #define buttonAmpBackward 3
-#define buttonDynamic 5
 
-#define buttonClimbUp 12
-#define buttonClimbDown 13
+#define buttonDynamicEnable 14 // left dpad
+#define buttonDynamicDisable 5 // right bumper
 
-#define buttonZeroYaw 8
-#define buttonEnableFieldOriented 10
-#define buttonDisableFieldOriented 11
+#define buttonClimbUp 12 // up dpad
+#define buttonClimbDown 13 // down dpad
 
-#define buttonEnable 9
-#define buttonDisable 15
+#define buttonZeroYaw 8 // select
+#define buttonEnableFieldOriented 10 // left joystick click
+#define buttonDisableFieldOriented 11 // right joystick click
+
+#define buttonEnable 9 // start
+#define buttonDisable 15 // right dpad
 
 ////////////////////////////////////////////////////////////////////// Pose Estimator //////////////////////////////////////////////////////////////////////
-constexpr float MOUSE_CONVERSION_FACTOR = (1.0/250.0); // 250 Dots per inch
+#define DPI 250.0 // 250 Dots per inch NEED TO TUNE
+
+constexpr float MOUSE_CONVERSION_FACTOR = (1.0/DPI); 
 
 #define baudRate 115200
 

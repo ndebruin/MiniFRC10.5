@@ -47,10 +47,6 @@ int8_t Intake::update(){
             intakeMode = 5;
             setPower = Intake_SHOOT_kS;
             break;
-        case DYNAMIC:
-            intakeMode = 6;
-            setPower = Intake_SHOOT_kS;
-            break;
         case SOURCE:
             intakeMode = 7;
             setPower = Intake_REVERSE_IN_kS;
