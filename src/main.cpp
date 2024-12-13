@@ -117,7 +117,18 @@ void loop()
   Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
   // SerialBluetooth.println(state.getNextAction());
 
-  if(state.RobotMode() == TELEOP_MODE){ // if in teleop
+  if(PestoLink.buttonHeld(buttonDynamicEnable)){ // overwriting this temporarily to be able to test
+    state.setAutoMode();
+    Pose desiredPose = 
+    {
+      0.0, // x
+      -12.0, // y
+      0.0 // theta
+    };
+    drivetrain.setPose(desiredPose);
+  }
+
+  if(state.getRobotMode() == TELEOP_MODE){ // if in teleop
     // handle drivetrain
     runDrivetrain();
     // handle state machine decisions    
@@ -164,6 +175,7 @@ void asyncUpdate(){
   if(!PestoLink.update()){
     state.setEnable(DISABLE); // disable if we disconnect
   }
+
 
   // rsl code
   RSL::update();
@@ -223,7 +235,7 @@ void runDrivetrain(){
   float linearY = -deadzone(PestoLink.getAxis(axisLinY));
   float angularZ = deadzone(PestoLink.getAxis(axisAngZ)) * 0.5;
   
-  drivetrain.drive(linearX, linearY, angularZ);
+  drivetrain.teleopDrive(linearX, linearY, angularZ);
 
   return;
 }
@@ -263,9 +275,9 @@ void runStateSelector(){
     state.setNextAction(CLIMBERS_DOWN);
   }
 
-  if(PestoLink.buttonHeld(buttonDynamicEnable)){
-    state.setDynamicTargeting(DYNAMIC);
-  }
+  // if(PestoLink.buttonHeld(buttonDynamicEnable)){
+  //   state.setDynamicTargeting(DYNAMIC);
+  // }
   else if(PestoLink.buttonHeld(buttonDynamicDisable)){
     state.setDynamicTargeting(PRESET);
   }

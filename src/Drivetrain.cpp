@@ -51,8 +51,8 @@ uint8_t Drivetrain::update()
         // just to be safe
         setFieldOriented(FIELD_ORIENTED);
         
-        // if we're enabled, use the control values
-        if(robotState->isEnabled()){
+        // if we're enabled and in an auto Mode (only current time we use the full pose controller), use the control values
+        if(robotState->isEnabled() && (robotState->getRobotMode() == AUTO_MODE)){
             drive(linearXCommand, linearYCommand, angularZCommand); // drive with our commands
         }
         

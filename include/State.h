@@ -103,7 +103,7 @@ class State
             robotMode = TELEOP_MODE;
         }
         // false for teleop, true for auto
-        bool RobotMode(){
+        bool getRobotMode(){
             return robotMode;
         }
 
