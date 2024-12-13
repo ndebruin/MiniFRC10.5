@@ -110,9 +110,9 @@ void loop()
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
 
-  Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
+  // Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
-  // Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
+  Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
   // SerialBluetooth.println(state.getNextAction());
 
   if(state.RobotMode() == TELEOP_MODE){ // if in teleop

@@ -15,6 +15,11 @@ uint8_t PoseEstimator::begin(){
         serial->begin(baudRate, SERIAL_8N1);
     }  
 
+
+    if(updateFromCoProc()){ // if we have an initial update, use it to zero yaw
+        rawYaw=rxDataStruct.yaw;
+        zeroYaw();
+    }
     return 0;
 }
 

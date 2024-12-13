@@ -126,11 +126,9 @@
 #define buttonDisable 15
 
 ////////////////////////////////////////////////////////////////////// Pose Estimator //////////////////////////////////////////////////////////////////////
-constexpr float MOUSE_CONVERSION_FACTOR = (1.0/1000.0); // 1000 Dots per inch
+constexpr float MOUSE_CONVERSION_FACTOR = (1.0/250.0); // 250 Dots per inch
 
 #define baudRate 115200
-#define TXPin 5 // doesn't matter we're not transmitting lmao
-#define RXPin 25
 
 ////////////////////////////////////////////////////////////////////// Dynamic Shot Controller //////////////////////////////////////////////////////////////////////
 #define goalHeight 17 // inches
@@ -146,7 +144,9 @@ constexpr float deltaHeight = (goalHeight - armHeight);
 // towards red is y+
 
 #define fieldLength 144.0 // inches
+#define fieldWidth 70.880 // inches
 
+// THESE NEED TO BE REDEFINED ONCE I WORK OUT A PROPER COORDINATE SYSTEM
 #define goalXRed 24.0
 constexpr float goalYRed = (fieldLength - 1.57);  // offset from far end of the field
 
