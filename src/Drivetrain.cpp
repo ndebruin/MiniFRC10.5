@@ -64,6 +64,7 @@ uint8_t Drivetrain::update()
                 Serial.println("STOPPING");
                 driveMode = FULL_TELEOP;
                 stop();
+                reachedGoal = true;
                 return 1;
             }
         }

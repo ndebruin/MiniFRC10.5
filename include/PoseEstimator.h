@@ -45,6 +45,10 @@ class PoseEstimator
 
         float thetaOfPose(Pose pose);
 
+        void resetPose(Pose pose);
+
+        void zeroPose();
+
     private:
         State* robotState;
         HardwareSerial *serial;

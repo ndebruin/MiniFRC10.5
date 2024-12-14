@@ -14,6 +14,8 @@
 #include "State.h"
 #include "FieldDims.h"
 
+#include "AutonDefs.h"
+
 #define OnePlusTaxiSource 1
 #define OnePlusTaxiAmp 2
 #define TwoCenter 2
@@ -29,11 +31,17 @@ class AutonRunner
 
         uint8_t begin(UpdateFunction backgroundFunction);
         uint8_t update();
-
+        void execute();
 
     private:
-        void delayWithoutBlocking(uint32_t millis);
+        void delayWithoutBlocking(int32_t millis);
         uint32_t startTime;
+
+        void OnePieceTaxiSource();
+        void OnePieceTaxiAmp();
+        void TwoPieceCenter();
+        void TwoPieceSource();
+        void TwoPieceAmp();
 
         UpdateFunction updateFunction;
         Drivetrain* drivetrain;

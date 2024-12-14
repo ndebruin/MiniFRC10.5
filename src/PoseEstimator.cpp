@@ -111,3 +111,14 @@ bool PoseEstimator::updateFromCoProc()
     }
     return false; // didn't update
 }
+
+void PoseEstimator::resetPose(Pose pose){
+    currentGlobalPose.x = pose.x;
+    currentGlobalPose.y = pose.y;
+    currentGlobalPose.yaw = pose.yaw;
+}
+
+void PoseEstimator::zeroPose(){
+    Pose zero = {0.0,0.0,0.0};
+    resetPose(zero);
+}

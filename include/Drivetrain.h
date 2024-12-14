@@ -39,6 +39,8 @@ class Drivetrain
 
         void setPose(Pose pose);
         void setTheta(float theta);
+        
+        bool reachedGoal = false;
 
     private:
         NoU_Drivetrain* nouDrivetrain;
