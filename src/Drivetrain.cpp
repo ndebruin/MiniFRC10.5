@@ -68,6 +68,10 @@ uint8_t Drivetrain::update()
                 stop();
                 correctCounterTheta = 0;
             }
+            else{
+                thetaPower = 1.0 - ((float)correctCounterTheta / (float)correctCount); // this will reduce the output power as a function of the number of times we are within the range
+                // this should dampen the osilations a bit (kinda a psuedo D term)
+            }
     }
     else if(fabs(thetaError) > theta_AcceptableError){
         correctCounterTheta = 0;
