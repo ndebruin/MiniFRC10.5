@@ -6,6 +6,7 @@
 
 #include "coProcCom.h"
 #include "Constants.h"
+#include "State.h"
 
 struct Pose{
     double x;
@@ -16,8 +17,8 @@ struct Pose{
 class PoseEstimator
 {
     public:
-        PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, uint8_t rxPin, uint8_t txPin);
-        PoseEstimator(HardwareSerial *SerialPort, uint BaudRate);
+        PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, uint8_t rxPin, uint8_t txPin, State* state);
+        PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, State* state);
 
         uint8_t begin();
         uint8_t update();
@@ -28,6 +29,9 @@ class PoseEstimator
 
         void zeroYaw(){
             yawOffset = rawYaw;
+            if(robotState->getAlliance() == BLUE){
+                yawOffset -= 180.0;
+            }
         }
         
         Pose getCurrentGlobalPose() { return currentGlobalPose; }
@@ -42,6 +46,7 @@ class PoseEstimator
         float thetaOfPose(Pose pose);
 
     private:
+        State* robotState;
         HardwareSerial *serial;
         uint baud;
         uint8_t tx, rx = 0;

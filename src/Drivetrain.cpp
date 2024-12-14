@@ -22,15 +22,6 @@ uint8_t Drivetrain::update()
         stop();
     }
 
-    if(cancelWhenInRange && // if we want to cancel when within range and are within range on all 3 axes
-        fabs(thetaError) < theta_AcceptableError &&
-        fabs(xError) < x_AcceptableError &&
-        fabs(yError) < y_AcceptableError)
-        {
-            driveMode = FULL_TELEOP;
-            stop();
-    }
-
     if(driveMode == THETA_ONLY){
         thetaError = (desiredTheta - pose->getCurrentGlobalPose().yaw);
 
@@ -39,23 +30,94 @@ uint8_t Drivetrain::update()
     }
 
     if(driveMode == FULL_AUTO){
+        
         xError = (desiredX - pose->getCurrentGlobalPose().x);
         yError = (desiredY - pose->getCurrentGlobalPose().y);
         thetaError = (desiredTheta - pose->getCurrentGlobalPose().yaw);
 
+        Serial.println("Error:" + String(xError) + "x" + String(yError) + "y" + String(thetaError) + "t");
+
         // suck it we're writing our own feedforward + P controller
-        linearXCommand = linX_kS + (xError * linX_kP);
-        linearYCommand = linY_kS + (yError * linY_kP);
-        angularZCommand = angZ_kS + (thetaError * angZ_kP);
+        linearXCommand = -((xError/fabs(xError))*linX_kS + (xError * linX_kP)) * xPower;
+        linearYCommand = -((yError/fabs(yError))*linY_kS + (yError * linY_kP)) * yPower;
+        angularZCommand = ((thetaError/fabs(thetaError))*angZ_kS + (thetaError * angZ_kP)) * thetaPower;
+
+        Serial.println("Command:" + String(linearXCommand) + "x" + String(linearYCommand) + "y" + String(angularZCommand) + "t");
 
         // just to be safe
         setFieldOriented(FIELD_ORIENTED);
+
+
         
         // if we're enabled and in an auto Mode (only current time we use the full pose controller), use the control values
         if(robotState->isEnabled() && (robotState->getRobotMode() == AUTO_MODE)){
             drive(linearXCommand, linearYCommand, angularZCommand); // drive with our commands
         }
         
+    }
+
+    if(cancelWhenInRange && // if we want to cancel when within range and are within range
+        fabs(thetaError) < theta_AcceptableError
+        )
+        {
+            correctCounterTheta++;
+            
+            if(correctCounterTheta > correctCount){
+                Serial.println("DONE YAW");
+                thetaPower = 0.0;
+                stop();
+                correctCounterTheta = 0;
+            }
+    }
+    else if(fabs(thetaError) > theta_AcceptableError){
+        correctCounterTheta = 0;
+    }
+
+    if(cancelWhenInRange && // if we want to cancel when within range and are within range
+        fabs(xError) < x_AcceptableError
+        )
+        {
+            correctCounterX++;
+            
+            if(correctCounterX > correctCount){
+                Serial.println("DONE X");
+                xPower = 0.0;
+                stop();
+                correctCounterX = 0;
+            }
+    }
+    else if(fabs(xError) > x_AcceptableError){
+        correctCounterX = 0;
+    }
+
+    if(cancelWhenInRange && // if we want to cancel when within range and are within range
+        fabs(yError) < y_AcceptableError
+        )
+        {
+            correctCounterY++;
+            
+            if(correctCounterY > correctCount){
+                Serial.println("DONE Y");
+                yPower = 0.0;
+                stop();
+                correctCounterY = 0;
+            }
+    }
+    else if(fabs(yError) > y_AcceptableError){
+        correctCounterY = 0;
+    }
+
+    if(xPower == 0.0 && yPower == 0.0 && thetaPower == 0.0){
+        Serial.println("testing");
+        xPower = 1.0;
+        yPower = 1.0;
+        thetaPower = 1.0;
+        if(fabs(thetaError) < theta_AcceptableError && fabs(yError) < y_AcceptableError && fabs(xError) < x_AcceptableError){ // if we're actually done
+            Serial.println("STOPPING");
+            driveMode = FULL_TELEOP;
+            stop();
+            return 1;
+        }
     }
 
     return 0;
@@ -88,6 +150,10 @@ void Drivetrain::drive(float linearX, float linearY, float angularZ)
         float temp = linearX* cos(pose->getYaw()*DEG_TO_RAD) + -linearY* sin(pose->getYaw()*DEG_TO_RAD); // this is the systems of equations form of a 2x2 rotation matrix
         linearY = linearX * sin(pose->getYaw()*DEG_TO_RAD) + linearY* cos(pose->getYaw()*DEG_TO_RAD); // this is also the commonly used field oriented drive equations
         linearX = temp;
+        if(robotState->getAlliance() == RED){
+            linearX *= -1.0;
+            linearY *= -1.0;
+        }
     }
     // float frontLeftPower  = linearY + angularZ + linearX;
     // float frontRightPower = linearY - angularZ - linearX;
@@ -136,10 +202,16 @@ void Drivetrain::setPose(Pose pose){
     // we actually want field oriented b.c. we're doing our path following in the inertial frame
     // therefore field oriented actually controls how we would like.
     cancelWhenInRange = true;
+
+    xPower = 1.0;
+    yPower = 1.0;
+    thetaPower = 1.0;
 }
 
 void Drivetrain::setTheta(float theta){
     desiredTheta = theta;
     driveMode = THETA_ONLY;
     cancelWhenInRange = false; // if we're doing heading control, we want to do it constantly
+
+    thetaPower = 1.0;
 }

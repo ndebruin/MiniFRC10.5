@@ -48,6 +48,10 @@ class Drivetrain
 
         bool fieldOriented = false;
 
+        int correctCounterTheta, correctCounterX, correctCounterY;
+
+        float thetaPower, xPower, yPower;
+
         // 0 - full teleop
         // 1 - auto theta only
         // 2 - full auto

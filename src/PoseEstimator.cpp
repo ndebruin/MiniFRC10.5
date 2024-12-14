@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "PoseEstimator.h"
 
-PoseEstimator::PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, uint8_t rxPin, uint8_t txPin) : serial(SerialPort), baud(BaudRate), tx(txPin), rx(rxPin)
+PoseEstimator::PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, uint8_t rxPin, uint8_t txPin, State* state) : serial(SerialPort), baud(BaudRate), tx(txPin), rx(rxPin), robotState(state)
 { }
 
-PoseEstimator::PoseEstimator(HardwareSerial *SerialPort, uint BaudRate) : serial(SerialPort), baud(BaudRate)
+PoseEstimator::PoseEstimator(HardwareSerial *SerialPort, uint BaudRate, State* state) : serial(SerialPort), baud(BaudRate), robotState(state)
 { }
 
 uint8_t PoseEstimator::begin(){
@@ -26,14 +26,21 @@ uint8_t PoseEstimator::begin(){
 uint8_t PoseEstimator::update(){
     // update data from the coproc
     if(updateFromCoProc()){
-        rawYaw = rxDataStruct.yaw + 180.0; // offset so we get 0->360 rather than -180->180
+        rawYaw = (rxDataStruct.yaw + 180.0); // offset so we get 0->360 rather than -180->180
+        if(rawYaw > 360.0){ // fix yaw wrap issues
+            rawYaw -= 360.0;
+        }
         Pose newRobotPoseData;
         // Serial.println(String(rxDataStruct.posX) + "x" + String(rxDataStruct.posY) + "y" + String(rxDataStruct.yaw) + "t");
         newRobotPoseData.x = -rxDataStruct.posX * MOUSE_CONVERSION_FACTOR;
         newRobotPoseData.y = rxDataStruct.posY * MOUSE_CONVERSION_FACTOR;
         newRobotPoseData.yaw = rawYaw - yawOffset;
+        if(newRobotPoseData.yaw < 0){
+            newRobotPoseData.yaw += 360.0;
+        }
         // Serial.println(String(newRobotPoseData.x) + "x" + String(newRobotPoseData.y) + "y" + String(newRobotPoseData.yaw) + "t");
         supplementPose(&currentGlobalPose, RobottoGlobalPose(newRobotPoseData));
+        // Serial.println(String(currentGlobalPose.x) + "x" + String(currentGlobalPose.y) + "y" + String(currentGlobalPose.yaw) + "t");
         return 1; // got an update
     }
     return 0; // didn't get an update

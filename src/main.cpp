@@ -24,11 +24,11 @@
 
 // BluetoothSerial SerialBluetooth; // bluetooth link
 
-PoseEstimator pose(&Serial, baudRate); // we're just running the coproc serial over the normal serial bus.
+State state;
+
+PoseEstimator pose(&Serial, baudRate, &state); // we're just running the coproc serial over the normal serial bus.
                                        // this kinda sucks bc it means that we need to disconnect it whenever we program, but oh well
                                        // can still use Serial.println() for normal computer info tho
-
-State state;
 
 // create our actual motors and servos
 
@@ -63,7 +63,7 @@ DynamicShotController shooterAim = DynamicShotController(&drivetrain, &arm, &sho
 void asyncUpdate();
 
 double deadzone(double raw);
-
+void constantButtons();
 void runDrivetrain();
 void runStateSelector(); // shot presets, climber, and intake
 
@@ -111,29 +111,22 @@ void setup()
 void loop() 
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
+  constantButtons(); // handle all the button inputs that should always happen
 
   // Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
-  Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
+  // Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
   // SerialBluetooth.println(state.getNextAction());
 
-  if(!state.isEnabled()){ // holy shit i'm literally running out of buttons i hate this so much
-    if(PestoLink.getAxis(axisAlliance) > 0.9){
-      state.setAlliance(RED);
-    }
-    if(PestoLink.getAxis(axisAlliance) < -0.9){
-      state.setAlliance(BLUE);
-    }
-  }
-  
+
 
   if(PestoLink.buttonHeld(buttonDynamicEnable)){ // overwriting this temporarily to be able to test
     state.setAutoMode();
     Pose desiredPose = 
     {
-      0.0, // x
-      -12.0, // y
-      0.0 // theta
+      1.0, // x
+      -3.0, // y
+      150.0 // theta
     };
     drivetrain.setPose(desiredPose);
   }
@@ -143,27 +136,8 @@ void loop()
     runDrivetrain();
     // handle state machine decisions    
     runStateSelector();
-
-    // enable / disable field oriented driving
-    if(PestoLink.buttonHeld(buttonEnableFieldOriented)){ 
-      drivetrain.setFieldOriented(FIELD_ORIENTED);
-    }
-    else if(PestoLink.buttonHeld(buttonDisableFieldOriented)){
-      drivetrain.setFieldOriented(ROBOT_ORIENTED);
-    }
   }
 
-  // enable / disable logic
-  // another "oh fuck i ran out of buttons" moment
-  if(PestoLink.buttonHeld(buttonZeroYaw) && PestoLink.buttonHeld(buttonEnable)){
-    state.setEnable(DISABLE);
-  }
-  else if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
-    pose.zeroYaw();
-  }
-  else if(PestoLink.buttonHeld(buttonEnable)){
-    state.setEnable(ENABLE);
-  }
 }
 
 ////////////////////////////////////////////////////////////////////// Function Definitions //////////////////////////////////////////////////////////////////////
@@ -227,8 +201,8 @@ void updatePestoLink(){
   // 8/8 characters
 
    // update pestolink telem
-  if(state.isEnabled()){
-    PestoLink.print(telem, "00FF00");
+  if(state.getAlliance() == BLUE){
+    PestoLink.print(telem, "0000FF");
   }
   else{
     PestoLink.print(telem, "FF0000");
@@ -241,6 +215,41 @@ double deadzone(double rawJoy){
     return 0.0;
   }
   return rawJoy;
+}
+
+void constantButtons(){
+  // enable / disable logic
+  // another "oh fuck i ran out of buttons" moment
+  if(PestoLink.buttonHeld(buttonZeroYaw) && PestoLink.buttonHeld(buttonEnable)){
+    state.setEnable(DISABLE);
+  }
+  else if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
+    pose.zeroYaw();
+  }
+  else if(PestoLink.buttonHeld(buttonEnable)){
+    state.setEnable(ENABLE);
+  }
+
+  if(!state.isEnabled()){ // holy shit i'm literally running out of buttons i hate this so much
+    if(PestoLink.getAxis(axisAlliance) > 0.9){
+      state.setAlliance(RED);
+    }
+    if(PestoLink.getAxis(axisAlliance) < -0.9){
+      state.setAlliance(BLUE);
+    }
+  }
+  // holy crap this is a really bad overload
+  if(PestoLink.buttonHeld(buttonClimbDown)){
+    state.setTeleopMode();
+  }
+
+  // enable / disable field oriented driving
+  if(PestoLink.buttonHeld(buttonEnableFieldOriented)){ 
+    drivetrain.setFieldOriented(FIELD_ORIENTED);
+  }
+  else if(PestoLink.buttonHeld(buttonDisableFieldOriented)){
+    drivetrain.setFieldOriented(ROBOT_ORIENTED);
+  }
 }
 
 void runDrivetrain(){
