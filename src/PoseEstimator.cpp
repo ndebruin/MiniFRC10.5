@@ -31,7 +31,7 @@ uint8_t PoseEstimator::update(){
         // Serial.println(String(rxDataStruct.posX) + "x" + String(rxDataStruct.posY) + "y" + String(rxDataStruct.yaw) + "t");
         newRobotPoseData.x = -rxDataStruct.posX * MOUSE_CONVERSION_FACTOR;
         newRobotPoseData.y = rxDataStruct.posY * MOUSE_CONVERSION_FACTOR;
-        newRobotPoseData.yaw = rxDataStruct.yaw - yawOffset;
+        newRobotPoseData.yaw = rawYaw - yawOffset;
         // Serial.println(String(newRobotPoseData.x) + "x" + String(newRobotPoseData.y) + "y" + String(newRobotPoseData.yaw) + "t");
         supplementPose(&currentGlobalPose, RobottoGlobalPose(newRobotPoseData));
         return 1; // got an update

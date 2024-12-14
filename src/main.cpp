@@ -67,7 +67,7 @@ double deadzone(double raw);
 void runDrivetrain();
 void runStateSelector(); // shot presets, climber, and intake
 
-char* updatePestoLink();
+void updatePestoLink();
 
 ////////////////////////////////////////////////////////////////////// Global Variables //////////////////////////////////////////////////////////////////////
 
@@ -117,6 +117,16 @@ void loop()
   Serial.println(String(pose.getCurrentGlobalPose().x) + "x" + String(pose.getCurrentGlobalPose().y) + "y" + String(pose.getCurrentGlobalPose().yaw) + "t");
   // SerialBluetooth.println(state.getNextAction());
 
+  if(!state.isEnabled()){ // holy shit i'm literally running out of buttons i hate this so much
+    if(PestoLink.getAxis(axisAlliance) > 0.9){
+      state.setAlliance(RED);
+    }
+    if(PestoLink.getAxis(axisAlliance) < -0.9){
+      state.setAlliance(BLUE);
+    }
+  }
+  
+
   if(PestoLink.buttonHeld(buttonDynamicEnable)){ // overwriting this temporarily to be able to test
     state.setAutoMode();
     Pose desiredPose = 
@@ -142,16 +152,17 @@ void loop()
       drivetrain.setFieldOriented(ROBOT_ORIENTED);
     }
   }
-  if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
-    pose.zeroYaw();
-  }
 
   // enable / disable logic
-  if(PestoLink.buttonHeld(buttonEnable)){
-    state.setEnable(ENABLE);
-  }
-  else if(PestoLink.buttonHeld(buttonDisable)){
+  // another "oh fuck i ran out of buttons" moment
+  if(PestoLink.buttonHeld(buttonZeroYaw) && PestoLink.buttonHeld(buttonEnable)){
     state.setEnable(DISABLE);
+  }
+  else if(PestoLink.buttonHeld(buttonZeroYaw)){ // reset IMU yaw
+    pose.zeroYaw();
+  }
+  else if(PestoLink.buttonHeld(buttonEnable)){
+    state.setEnable(ENABLE);
   }
 }
 
@@ -188,23 +199,19 @@ void asyncUpdate(){
   }
 
   // update pestolink telem
-  if(state.isEnabled()){
-    PestoLink.print(updatePestoLink(), "00FF00");
-  }
-  else{
-    PestoLink.print(updatePestoLink(), "FF0000");
-  }
+  updatePestoLink();
 }
 
-char* updatePestoLink(){
+void updatePestoLink(){
   String telemString;
 
   if(state.getAlliance() == RED){
-    telemString.concat('R ');
+    telemString.concat('R');
   }
   else{
-    telemString.concat('B ');
+    telemString.concat('B');
   } // 2/8 characters
+  telemString.concat(' ');
   telemString.concat(state.getNextAction());
   telemString.concat(' '); // 4/8 characters
   telemString.concat(String(pose.getYaw()));
@@ -217,10 +224,16 @@ char* updatePestoLink(){
   } // 5/8 characters
 
   char* telem = (char*)telemString.c_str();
-  dtostrf(pose.getYaw(), 3, 0, telem);  // 3 width, 0 decimal points
   // 8/8 characters
 
-  return telem;
+   // update pestolink telem
+  if(state.isEnabled()){
+    PestoLink.print(telem, "00FF00");
+  }
+  else{
+    PestoLink.print(telem, "FF0000");
+  }
+  return;
 }
 
 double deadzone(double rawJoy){

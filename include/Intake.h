@@ -28,9 +28,9 @@ class Intake
         // 7 - Source Intake
         int8_t getMode(){ return intakeMode; }
 
-        void set(double kS){
+        void set(double kSM){
             intakeMode = -1;
-            setPower = kS;
+            setPower = kSM;
             execute();
         }
 

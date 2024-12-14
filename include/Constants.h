@@ -47,7 +47,7 @@
 #define shooterMotorChannel 4
 
 #define Shooter_AMP_Forward_kS 0.0
-#define Shooter_AMP_Backward_kS 0.7
+#define Shooter_AMP_Backward_kS 0.65
 
 #define Shooter_SUBWOOFER_kS 1.0
 
@@ -86,7 +86,7 @@
 
 #define arm_SUB_angle 73
 
-#define arm_AMP_FORWARD_angle 180
+#define arm_AMP_FORWARD_angle 200
 #define arm_AMP_BACKWARD_angle 210
 
 #define arm_PASS_angle 25
@@ -103,6 +103,8 @@
 #define axisLinY 1
 #define axisLinX 0
 #define axisAngZ 2
+
+#define axisAlliance 3
 
 #define buttonIntake 6 // left trigger
 #define buttonExecute 7 // right trigger

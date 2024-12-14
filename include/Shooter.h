@@ -27,9 +27,9 @@ class Shooter
 
         void stop(); // only to be used in cases of e-stoppage or similar
 
-        void run(double kS){
+        void run(double kSM){
             shooterMode = -1;
-            setPower = kS;
+            setPower = kSM;
             execute();
         }
         void execute();
