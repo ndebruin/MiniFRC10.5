@@ -26,7 +26,9 @@ uint8_t Drivetrain::update()
         thetaError = (desiredTheta - pose->getCurrentGlobalPose().yaw);
 
         // suck it we're writing our own feedforward + P controller
-        angularZCommand = angZ_kS + (thetaError * angZ_kP);
+        angularZCommand = ((thetaError/fabs(thetaError))*angZ_kS + (thetaError * angZ_kP)) * thetaPower;
+
+        // if we're in this mode we just want to do this continously until told otherwise, therefore there is no termination clause
     }
 
     if(driveMode == FULL_AUTO){
@@ -47,17 +49,28 @@ uint8_t Drivetrain::update()
         // just to be safe
         setFieldOriented(FIELD_ORIENTED);
 
-
-        
         // if we're enabled and in an auto Mode (only current time we use the full pose controller), use the control values
         if(robotState->isEnabled() && (robotState->getRobotMode() == AUTO_MODE)){
             drive(linearXCommand, linearYCommand, angularZCommand); // drive with our commands
         }
+
+        // this defines the end case
+        if(xPower == 0.0 && yPower == 0.0 && thetaPower == 0.0){
+            Serial.println("testing");
+            xPower = 1.0;
+            yPower = 1.0;
+            thetaPower = 1.0;
+            if(fabs(thetaError) < theta_AcceptableError && fabs(yError) < y_AcceptableError && fabs(xError) < x_AcceptableError){ // if we're actually done
+                Serial.println("STOPPING");
+                driveMode = FULL_TELEOP;
+                stop();
+                return 1;
+            }
+        }
         
     }
 
-    if(cancelWhenInRange && // if we want to cancel when within range and are within range
-        fabs(thetaError) < theta_AcceptableError
+    if(fabs(thetaError) < theta_AcceptableError
         )
         {
             correctCounterTheta++;
@@ -65,28 +78,24 @@ uint8_t Drivetrain::update()
             if(correctCounterTheta > correctCount){
                 Serial.println("DONE YAW");
                 thetaPower = 0.0;
-                stop();
                 correctCounterTheta = 0;
             }
             else{
                 thetaPower = 1.0 - ((float)correctCounterTheta / (float)correctCount); // this will reduce the output power as a function of the number of times we are within the range
-                // this should dampen the osilations a bit (kinda a psuedo D term)
+                // this should dampen the osillations a bit (kinda a psuedo D term)
             }
     }
     else if(fabs(thetaError) > theta_AcceptableError){
         correctCounterTheta = 0;
     }
 
-    if(cancelWhenInRange && // if we want to cancel when within range and are within range
-        fabs(xError) < x_AcceptableError
-        )
+    if(fabs(xError) < x_AcceptableError)
         {
             correctCounterX++;
             
             if(correctCounterX > correctCount){
                 Serial.println("DONE X");
                 xPower = 0.0;
-                stop();
                 correctCounterX = 0;
             }
     }
@@ -94,35 +103,19 @@ uint8_t Drivetrain::update()
         correctCounterX = 0;
     }
 
-    if(cancelWhenInRange && // if we want to cancel when within range and are within range
-        fabs(yError) < y_AcceptableError
-        )
+    if(fabs(yError) < y_AcceptableError)
         {
             correctCounterY++;
             
             if(correctCounterY > correctCount){
                 Serial.println("DONE Y");
                 yPower = 0.0;
-                stop();
                 correctCounterY = 0;
             }
     }
     else if(fabs(yError) > y_AcceptableError){
         correctCounterY = 0;
-    }
-
-    if(xPower == 0.0 && yPower == 0.0 && thetaPower == 0.0){
-        Serial.println("testing");
-        xPower = 1.0;
-        yPower = 1.0;
-        thetaPower = 1.0;
-        if(fabs(thetaError) < theta_AcceptableError && fabs(yError) < y_AcceptableError && fabs(xError) < x_AcceptableError){ // if we're actually done
-            Serial.println("STOPPING");
-            driveMode = FULL_TELEOP;
-            stop();
-            return 1;
-        }
-    }
+    }    
 
     return 0;
 }

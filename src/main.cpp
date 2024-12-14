@@ -15,7 +15,7 @@
 // other custom code
 #include "State.h"
 #include "PoseEstimator.h"
-#include "PathFollower.h"
+#include "AutonRunner.h"
 #include "DynamicShotController.h"
 
 #include "Constants.h"
@@ -54,9 +54,9 @@ Intake intake = Intake(&intakeMotor, &state);
 
 // create our object definitions for fancy stuff (path following, autoaim, etc)
 
-// PathFollower pathFollower = PathFollower(&drivetrain, &pose, &state);
-
 DynamicShotController shooterAim = DynamicShotController(&drivetrain, &arm, &shooter, &pose, &state);
+
+AutonRunner autonRunner = AutonRunner(&drivetrain, &arm, &shooter, &intake, &pose, &state);
 
 ////////////////////////////////////////////////////////////////////// Function Declerations //////////////////////////////////////////////////////////////////////
 
@@ -102,8 +102,8 @@ void setup()
   pose.begin();
   
   // start advanced controllers
-  // pathFollower.begin();
   shooterAim.begin();
+  autonRunner.begin(asyncUpdate);
 }
 
 ////////////////////////////////////////////////////////////////////// loop() //////////////////////////////////////////////////////////////////////
@@ -120,18 +120,22 @@ void loop()
 
 
 
-  if(PestoLink.buttonHeld(buttonDynamicEnable)){ // overwriting this temporarily to be able to test
-    state.setAutoMode();
-    Pose desiredPose = 
-    {
-      1.0, // x
-      -3.0, // y
-      150.0 // theta
-    };
-    drivetrain.setPose(desiredPose);
+  if(!state.isEnabled()){ // reuse preset buttons for auton selectors
+    if(PestoLink.buttonHeld(buttonSub)){
+      state.selectedAuton = 1;
+    }
+    else if(PestoLink.buttonHeld(buttonAmpForward)){
+      state.selectedAuton = 2;
+    }
+    else if(PestoLink.buttonHeld(buttonPass)){
+      state.selectedAuton = 3;
+    }
+    else if(PestoLink.buttonHeld(buttonAmpBackward)){
+      state.selectedAuton = 4;
+    }
   }
 
-  if(state.getRobotMode() == TELEOP_MODE){ // if in teleop
+  if(state.getRobotMode() == TELEOP_MODE && state.isEnabled()){ // if in teleop
     // handle drivetrain
     runDrivetrain();
     // handle state machine decisions    
@@ -153,8 +157,8 @@ void asyncUpdate(){
   pose.update();
 
   // let advanced controllers update
-  // pathFollower.update();
-  // shooterAim.update();
+  autonRunner.update();
+  shooterAim.update();
 
   // update from driver station
   if(!PestoLink.update()){

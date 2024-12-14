@@ -107,6 +107,8 @@ class State
             return robotMode;
         }
 
+        uint8_t selectedAuton = 0;
+
     private:
 
         bool enabled = false;
