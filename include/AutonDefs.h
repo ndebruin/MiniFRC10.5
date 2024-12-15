@@ -6,44 +6,44 @@
 // subwoofer starting positions
 constexpr Pose sourceSideSubBlue = 
 {
-    24.0, // x
-    1.57, // y 
-    180.0 // theta
+    34.33, // x
+    5.85, // y 
+    240.0 // theta
 };
 
 constexpr Pose centerSideSubBlue = 
 {
     24.0, // x
-    1.57, // y 
+    11.7, // y 
     180.0 // theta
 };
 
 constexpr Pose ampSideSubBlue = 
 {
-    24.0, // x
-    1.57, // y 
-    180.0 // theta
+    14.0, // x
+    5.85, // y 
+    120.0 // theta
 };
 
 // spike note locations
 constexpr Pose sourceSpikeNoteBlue = 
 {
-    24.0, // x
-    1.57, // y 
+    36.0, // x
+    27.25, // y 
     180.0 // theta
 };
 
 constexpr Pose centerSpikeNoteBlue = 
 {
     24.0, // x
-    1.57, // y 
+    27.25, // y 
     180.0 // theta
 };
 
 constexpr Pose ampSpikeNoteBlue = 
 {
-    24.0, // x
-    1.57, // y 
+    12.0, // x
+    27.25, // y 
     180.0 // theta
 };
 
@@ -55,45 +55,45 @@ constexpr Pose ampSpikeNoteBlue =
 // subwoofer starting positions
 constexpr Pose sourceSideSubRed = 
 {
-    24.0, // x
-    1.57, // y 
-    180.0 // theta
+    34.33, // x
+    fieldLength - 5.85, // y 
+    300.0 // theta
 };
 
 constexpr Pose centerSideSubRed = 
 {
     24.0, // x
-    1.57, // y 
-    180.0 // theta
+    fieldLength - 11.7, // y 
+    0.0 // theta
 };
 
 constexpr Pose ampSideSubRed = 
 {
-    24.0, // x
-    1.57, // y 
+    14.0, // x
+    fieldLength - 5.85, // y 
     180.0 // theta
 };
 
 // spike note locations
 constexpr Pose sourceSpikeNoteRed = 
 {
-    24.0, // x
-    1.57, // y 
-    180.0 // theta
+    36.0, // x
+    fieldLength - 27.25, // y 
+    0.0 // theta
 };
 
 constexpr Pose centerSpikeNoteRed = 
 {
     24.0, // x
-    1.57, // y 
-    180.0 // theta
+    fieldLength - 27.25, // y 
+    0.0 // theta
 };
 
 constexpr Pose ampSpikeNoteRed = 
 {
-    24.0, // x
-    1.57, // y 
-    180.0 // theta
+    12.0, // x
+    fieldLength - 27.25, // y 
+    0.0 // theta
 };
 
 

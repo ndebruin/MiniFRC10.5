@@ -111,7 +111,7 @@ void setup()
 void loop() 
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
-  constantButtons(); // handle all the button inputs that should always happen
+  // constantButtons(); // handle all the button inputs that should always happen
 
   // Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
@@ -122,16 +122,22 @@ void loop()
 
   if(!state.isEnabled()){ // reuse preset buttons for auton selectors
     if(PestoLink.buttonHeld(buttonSub)){
-      state.selectedAuton = 1;
+      state.selectedAuton = OnePlusTaxiSource;
     }
     else if(PestoLink.buttonHeld(buttonAmpForward)){
-      state.selectedAuton = 2;
+      state.selectedAuton = OnePlusTaxiAmp;
     }
     else if(PestoLink.buttonHeld(buttonPass)){
-      state.selectedAuton = 3;
+      state.selectedAuton = TwoAmp;
     }
     else if(PestoLink.buttonHeld(buttonAmpBackward)){
-      state.selectedAuton = 4;
+      state.selectedAuton = TwoSource;
+    }
+  }
+
+  if(state.isEnabled()){
+    if(PestoLink.buttonHeld(buttonDynamicEnable)){ // auton run
+      autonRunner.execute();
     }
   }
 
@@ -178,6 +184,7 @@ void asyncUpdate(){
 
   // update pestolink telem
   updatePestoLink();
+  constantButtons();
 }
 
 void updatePestoLink(){
