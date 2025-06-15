@@ -111,7 +111,6 @@ void setup()
 void loop() 
 {
   asyncUpdate(); // updates all the things that need to be updated every loop regardless of anything else
-  // constantButtons(); // handle all the button inputs that should always happen
 
   // Serial.println("sensor1:" + String(intake.sensor1Value()) + " sensor2:" + String(intake.sensor2Value()));
 
